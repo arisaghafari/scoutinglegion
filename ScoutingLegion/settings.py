@@ -118,6 +118,13 @@ REST_FRAMEWORK = {
 
 }
 
+REST_AUTH_SERIALIZERS = {
+    'USER_DETAILS_SERIALIZER': 'users.serializers.UserSerializer',
+}
+REST_AUTH_REGISTER_SERIALIZERS = {
+    'REGISTER_SERIALIZER': 'users.serializers.UserRegistrationSerializer',
+}
+
 AUTH_USER_MODEL = 'users.CustomUser'
 
 ACCOUNT_USER_MODEL_USERNAME_FIELD = 'username'
