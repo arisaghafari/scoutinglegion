@@ -92,7 +92,7 @@ DATABASES = {
         'NAME': 'sl_db',
         'USER': 'postgres',
         'PASSWORD': '1234',
-        'HOST': '127.0.0.1',
+        'HOST': 'scoutinglegion_db_sl_1',
         'PORT': '5432',
     }
 }
