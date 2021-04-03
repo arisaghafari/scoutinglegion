@@ -4,6 +4,18 @@ from rest_framework import serializers
 from .models import CustomUser
 
 
+class UserDetailSerializers(serializers.ModelSerializer):
+    firstname = serializers.CharField(required=False)
+    lastname = serializers.CharField(required=False)
+    email = serializers.EmailField(required=False)
+    username = serializers.CharField(required=False)
+    city = serializers.CharField(required=False)
+
+    class Meta:
+        model = CustomUser
+        fields = ['id', 'email', 'username', 'city', 'firstname', 'lastname', 'profile_picture']
+
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
