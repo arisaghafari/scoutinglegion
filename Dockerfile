@@ -1,10 +1,6 @@
 # pull official base image
 FROM python:3.8.3-alpine
 
-# set work directory
-#WORKDIR /usr/src/app
-WORKDIR /scoutinglegion
-
 # set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
@@ -40,11 +36,25 @@ RUN apk add postgresql-dev
 RUN pip install psycopg2
 
 RUN apk add --no-cache jpeg-dev zlib-dev
-COPY requirements.txt .
-RUN pip install -r requirements.txt
 
-# copy project
-COPY . .
+# set work directory
+#WORKDIR /usr/src/app
+#WORKDIR /scoutinglegion
+RUN mkdir scoutinglegion
+#RUN cd /scoutinglegion
+COPY requirements.txt /scoutinglegion
+RUN pip install -r /scoutinglegion/requirements.txt
+COPY . /scoutinglegion
+RUN rm /scoutinglegion/index.html
+#RUN cd ..
+
+#fix swagger
+#RUN cd ..
+#RUN cd /usr/local/lib/python3.8/site-packages/rest_framework_swagger/templates/rest_framework_swagger/
+RUN rm /usr/local/lib/python3.8/site-packages/rest_framework_swagger/templates/rest_framework_swagger/index.html
+COPY index.html /usr/local/lib/python3.8/site-packages/rest_framework_swagger/templates/rest_framework_swagger/
+
+WORKDIR /scoutinglegion
 
 # run entrypoint.sh
 #ENTRYPOINT ["/scoutinglegion/entrypoint.sh"]
