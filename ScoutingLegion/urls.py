@@ -22,7 +22,7 @@ from .settings import MEDIA_URL, MEDIA_ROOT
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include('users.urls')),
+    path('api/account/', include('users.urls')),
     path('schema/', get_schema_view(title="Scouting Legion")),
     path('swagger-docs/', get_swagger_view(title="Scouting Legion")),
 ]
