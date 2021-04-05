@@ -1,15 +1,27 @@
+import base64
+import uuid
+
+import six
+from django.core.files.base import ContentFile
 from django.utils.translation import ugettext_lazy as _
 from rest_auth.registration.serializers import RegisterSerializer
 from rest_framework import serializers
+from rest_framework.validators import UniqueValidator
+
 from .models import CustomUser
 
 
 class UserDetailSerializers(serializers.ModelSerializer):
-    firstname = serializers.CharField(required=False)
-    lastname = serializers.CharField(required=False)
-    email = serializers.EmailField(required=False)
-    username = serializers.CharField(required=False)
+    firstname = serializers.CharField(required=False, allow_null=True, allow_blank=True)
+    lastname = serializers.CharField(required=False, allow_null=True,  allow_blank=True)
+    email = serializers.EmailField(required=False, validators=[
+        UniqueValidator(queryset=CustomUser.objects.all())
+    ])
+    username = serializers.CharField(required=False, validators=[
+        UniqueValidator(queryset=CustomUser.objects.all())
+    ])
     city = serializers.CharField(required=False)
+    profile_picture = serializers.ImageField(allow_empty_file=True, allow_null=True, required=False)
 
     class Meta:
         model = CustomUser
