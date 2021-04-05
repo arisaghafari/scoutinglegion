@@ -21,7 +21,7 @@ class UserDetailSerializers(serializers.ModelSerializer):
         UniqueValidator(queryset=CustomUser.objects.all())
     ])
     city = serializers.CharField(required=False)
-    profile_picture = serializers.ImageField(allow_empty_file=True, allow_null=True, required=False)
+    profile_picture = serializers.ImageField(allow_null=True, required=False)
 
     class Meta:
         model = CustomUser
