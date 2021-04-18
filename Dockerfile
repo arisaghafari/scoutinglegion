@@ -37,24 +37,20 @@ RUN pip install psycopg2
 
 RUN apk add --no-cache jpeg-dev zlib-dev
 
-# set work directory
-#WORKDIR /usr/src/app
-#WORKDIR /scoutinglegion
+
 RUN mkdir scoutinglegion
-#RUN cd /scoutinglegion
+
 COPY requirements.txt /scoutinglegion
 RUN pip install -r /scoutinglegion/requirements.txt
 COPY . /scoutinglegion
-RUN rm /scoutinglegion/index.html
-#RUN cd ..
 
-#fix swagger
-#RUN cd ..
-#RUN cd /usr/local/lib/python3.8/site-packages/rest_framework_swagger/templates/rest_framework_swagger/
+RUN rm /scoutinglegion/index.html
+
+
 RUN rm /usr/local/lib/python3.8/site-packages/rest_framework_swagger/templates/rest_framework_swagger/index.html
 COPY index.html /usr/local/lib/python3.8/site-packages/rest_framework_swagger/templates/rest_framework_swagger/
 
 WORKDIR /scoutinglegion
+EXPOSE 8000
 
-# run entrypoint.sh
-#ENTRYPOINT ["/scoutinglegion/entrypoint.sh"]
+CMD ["gunicorn", "ScoutingLegion.wsgi", ":8000"]
