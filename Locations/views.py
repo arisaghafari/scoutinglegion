@@ -7,6 +7,23 @@ from shapely import geometry
 # Create your views here.
 
 
+class GetLocationDetailsViewSet(generics.ListAPIView):
+    permission_classes = (permissions.AllowAny,)
+    serializer_class = LocationSerializers
+
+    def get(self, request, *args, **kwargs):
+        lat = float(self.request.query_params['lat'])
+        long = float(self.request.query_params['long'])
+        if Location.objects.filter(latitude=lat, longitude=long).exists():
+            loc = Location.objects.get(latitude=lat, longitude=long)
+            queryset = [loc, ]
+            serializer = self.get_serializer(queryset, many=True)
+            loc_data = serializer.data
+            return Response(loc_data)
+        else:
+            return Response("couldn't find the location")
+
+
 class CreateLocationViewSet(generics.CreateAPIView):
     queryset = Location.objects.all()
     permission_classes = (permissions.AllowAny,)
