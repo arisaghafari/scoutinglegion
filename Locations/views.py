@@ -26,8 +26,20 @@ class GetLocationDetailsViewSet(generics.ListAPIView):
 
 class CreateLocationViewSet(generics.CreateAPIView):
     queryset = Location.objects.all()
-    permission_classes = (permissions.AllowAny,)
     serializer_class = LocationSerializers
+
+    def perform_create(self, serializer):
+        return serializer.save(creator=self.request.user)
+
+
+class ViewLocationViewSet(generics.ListAPIView):
+    queryset = Location.objects.all()
+    serializer_class = LocationSerializers
+
+    def get(self, request, *args, **kwargs):
+        queryset = Location.objects.filter(creator=self.request.user)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
 
 class NearbyLocationsViewSet(generics.ListAPIView):
