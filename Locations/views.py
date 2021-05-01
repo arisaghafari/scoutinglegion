@@ -1,10 +1,12 @@
 from django.shortcuts import render
-from rest_framework import generics, permissions
+from rest_framework import generics, permissions, status
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .serializers import LocationSerializers
 from .models import Location
 from shapely import geometry
-# Create your views here.
+from urllib.request import urlopen
+import json
 
 
 class GetLocationDetailsViewSet(generics.ListAPIView):
@@ -78,3 +80,71 @@ def is_inside(center_loc, loc, radius=0.05):
     point_2 = geometry.Point(loc[0], loc[1])
     circle_buffer = point_1.buffer(radius)
     return circle_buffer.contains(point_2)
+
+@api_view(['POST'])
+def get_all_locations(request):
+    own_location = Location.objects.all()
+    sr_own_location = LocationSerializers(own_location, many=True)
+    radius = request.data['radius']
+    lon = request.data['lon']
+    lat = request.data['lat']
+    if request.data['kinds'] == '':
+        kinds = ''
+    else:
+        kinds = '&kinds=' + request.data['kinds']
+    if request.data['rate'] == 'all':
+        rate = ''
+    else:
+        rate = '&rate=' + request.data['rate']
+    url = 'http://api.opentripmap.com/0.1/en/places/radius?radius='+radius+'&lon='+lon+'&lat='+lat+kinds+rate+'&apikey=5ae2e3f221c38a28845f05b60743dfd0a4eaed6030e537cb1f99a226&format=json&src_attr=wikidata'
+    with urlopen(url) as u:
+        data = u.read()
+
+    pdata = json.loads(data.decode('utf-8'))
+    #opentripmapfile = open("opentripmapdata.json", "w")
+    #own_file = open("own_data.json", "w")
+    #json.dump(pdata, opentripmapfile)
+    #json.dumps(sr_own_location)
+    return Response(pdata, status.HTTP_200_OK)
+
+def location_detail_opentripmap(id):
+    url = 'http://api.opentripmap.com/0.1/en/places/xid/' + id + '?apikey=5ae2e3f221c38a28845f05b60743dfd0a4eaed6030e537cb1f99a226'
+    with urlopen(url) as u:
+        data = u.read()
+    l = json.loads(data.decode('utf-8'))
+    return l
+
+@api_view()
+def location_detail(request, id):
+    try:
+        if type(id) == int:
+            location = Location.objects.get(id = id)
+            l = LocationSerializers(location)
+            return Response(l.data, status.HTTP_200_OK)
+        else:
+            l = location_detail_opentripmap(id)
+            return Response(l, status.HTTP_200_OK)
+    except Location.DoesNotExist:
+        try:
+            l = location_detail_opentripmap(id)
+            return Response(l, status.HTTP_200_OK)
+        except:
+            return Response({"this location does not exist!!"}, status.HTTP_404_NOT_FOUND)
+
+    return Response({"oops"})
+
+def search_location_by_name_own_database(name):
+    pass
+
+@api_view()
+def search_location_by_name(request, name):
+    loc = search_location_by_name_own_database(name)
+    if loc == None:
+        url = 'http://api.opentripmap.com/0.1/en/places/geoname?name='+name+'&country=IR&apikey=5ae2e3f221c38a28845f05b60743dfd0a4eaed6030e537cb1f99a226'
+        with urlopen(url) as u:
+            data = u.read()
+
+        pdata = json.loads(data.decode('utf-8'))
+        return Response(pdata, status.HTTP_200_OK)
+    else:
+        return Response({"be zoodi !!!!"}, status.HTTP_200_OK)
