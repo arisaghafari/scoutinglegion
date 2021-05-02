@@ -16,6 +16,5 @@ class LocationSerializers(serializers.ModelSerializer):
         model = Location
         fields = ['id', 'loc_name', 'creator_id', 'creator_firstname', 'creator_lastname', 'creator_username',
                   'creator_profile_picture',
-                  'latitude', 'longitude', 'category',
-                  'type', 'city', 'state', 'loc_picture', 'description', 'address']
+                  'latitude', 'longitude', 'category', 'city', 'state', 'loc_picture', 'description', 'address']
 
