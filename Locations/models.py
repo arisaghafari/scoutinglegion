@@ -14,6 +14,7 @@ class Location(models.Model):
     state = models.CharField(_('state of location'), max_length=100, null=False)
     loc_picture = models.ImageField(_('location picture'), null=True, blank=True, upload_to='Uploaded/location_picture')
     description = models.TextField(_('location description'), null=True, blank=True)
+    address = models.CharField(_('location address'), max_length=200)
     creator = models.ForeignKey(CustomUser, related_name="creator_location", on_delete=models.CASCADE, default=None)
 
     class Meta:
