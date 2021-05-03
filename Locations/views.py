@@ -149,7 +149,7 @@ def search_location_by_name(request, name):
         return Response(pdata, status.HTTP_200_OK)
     else:
         return Response({"be zoodi !!!!"}, status.HTTP_200_OK)
-
+"""""
 @api_view()
 def categoryLocation(request, slug):
     radius = request.query_params['radius']
@@ -176,7 +176,6 @@ def categoryLocation(request, slug):
     locations = get_nearby_locations(center_loc, state)
     own_data = LocationSerializers(locations, many=True)
     category = get_object_or_404(Category, slug=slug)
-    sr_category = CategorySerializer(category,  many=True)
     locationList = []
     for d in own_data.data:
         p = category.location.get(id = d["id"])
@@ -186,3 +185,4 @@ def categoryLocation(request, slug):
         if category.title in d["kinds"]:
             locationList.append(d)
     return Response(locationList, status.HTTP_200_OK)
+"""""
