@@ -92,6 +92,8 @@ def get_all_locations(request):
         kinds = '&kinds=' + request.query_params['kinds']
     if request.query_params['rate'] == 'all':
         rate = ''
+    else:
+        rate = '&rate=' + request.query_params['rate']
     url = 'http://api.opentripmap.com/0.1/en/places/radius?radius=' + radius + '&lon=' + lon + '&lat=' + lat + kinds + rate + '&apikey=5ae2e3f221c38a28845f05b60743dfd0a4eaed6030e537cb1f99a226&format=json&src_attr=wikidata'
     with urlopen(url) as u:
         data = u.read()
