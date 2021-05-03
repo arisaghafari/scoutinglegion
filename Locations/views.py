@@ -1,9 +1,9 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from rest_framework import generics, permissions, status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .serializers import LocationSerializers
-from .models import Location
+from .serializers import *
+from .models import Location, Category
 from shapely import geometry
 from urllib.request import urlopen
 import json
@@ -81,10 +81,24 @@ def is_inside(center_loc, loc, radius=0.05):
     circle_buffer = point_1.buffer(radius)
     return circle_buffer.contains(point_2)
 
-@api_view(['POST'])
+@api_view()
 def get_all_locations(request):
-    own_location = Location.objects.all()
-    sr_own_location = LocationSerializers(own_location, many=True)
+    radius = request.query_params['radius']
+    lon = request.query_params['lon']
+    lat = request.query_params['lat']
+    if request.query_params['kinds'] == '':
+        kinds = ''
+    else:
+        kinds = '&kinds=' + request.query_params['kinds']
+    if request.query_params['rate'] == 'all':
+        rate = ''
+    url = 'http://api.opentripmap.com/0.1/en/places/radius?radius=' + radius + '&lon=' + lon + '&lat=' + lat + kinds + rate + '&apikey=5ae2e3f221c38a28845f05b60743dfd0a4eaed6030e537cb1f99a226&format=json&src_attr=wikidata'
+    with urlopen(url) as u:
+        data = u.read()
+
+    pdata = json.loads(data.decode('utf-8'))
+    return Response(pdata, status.HTTP_200_OK)
+    """""
     radius = request.data['radius']
     lon = request.data['lon']
     lat = request.data['lat']
@@ -101,12 +115,9 @@ def get_all_locations(request):
         data = u.read()
 
     pdata = json.loads(data.decode('utf-8'))
-    #opentripmapfile = open("opentripmapdata.json", "w")
-    #own_file = open("own_data.json", "w")
-    #json.dump(pdata, opentripmapfile)
-    #json.dumps(sr_own_location)
-    return Response(pdata, status.HTTP_200_OK)
 
+    return Response(pdata, status.HTTP_200_OK)
+    """
 def location_detail_opentripmap(id):
     url = 'http://api.opentripmap.com/0.1/en/places/xid/' + id + '?apikey=5ae2e3f221c38a28845f05b60743dfd0a4eaed6030e537cb1f99a226'
     with urlopen(url) as u:
@@ -148,3 +159,13 @@ def search_location_by_name(request, name):
         return Response(pdata, status.HTTP_200_OK)
     else:
         return Response({"be zoodi !!!!"}, status.HTTP_200_OK)
+
+#########################################
+@api_view()
+def categoryLocation(request, slug):
+    category = get_object_or_404(Category, slug=slug)
+    sr_category = CategorySerializer(category,  many=True)
+    locationList = category.location.all()
+    sr_locationList = LocationSerializers(locationList, many=True)
+    return Response(sr_locationList.data, status.HTTP_200_OK)
+###########################################

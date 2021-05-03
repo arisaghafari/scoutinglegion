@@ -2,8 +2,13 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from users.models import CustomUser
 
+class Category(models.Model):
+    title = models.CharField(max_length=200)
+    slug = models.SlugField(max_length=200, unique=True)
 
-# Create your models here.
+    def __str__(self):
+        return self.title
+
 class Location(models.Model):
     loc_name = models.CharField(_('name'), max_length=200, null=False)
     latitude = models.FloatField(_('location latitude'), null=False, blank=False)
@@ -15,6 +20,7 @@ class Location(models.Model):
     description = models.TextField(_('location description'), null=True, blank=True)
     address = models.CharField(_('location address'), max_length=200, null=False)
     creator = models.ForeignKey(CustomUser, related_name="creator_location", on_delete=models.CASCADE, default=None)
+    kinds = models.ManyToManyField(Category, related_name="location")
 
     class Meta:
         unique_together = ('latitude', 'longitude',)

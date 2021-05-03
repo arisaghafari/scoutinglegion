@@ -2,7 +2,7 @@ from rest_framework import serializers
 from users.serializers import UserDetailSerializers
 from rest_framework.validators import UniqueValidator
 
-from .models import Location
+from .models import *
 
 
 class LocationSerializers(serializers.ModelSerializer):
@@ -18,3 +18,7 @@ class LocationSerializers(serializers.ModelSerializer):
                   'creator_profile_picture',
                   'latitude', 'longitude', 'category', 'city', 'state', 'loc_picture', 'description', 'address']
 
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = '__all__'
