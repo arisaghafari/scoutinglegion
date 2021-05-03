@@ -16,9 +16,11 @@ class LocationSerializers(serializers.ModelSerializer):
         model = Location
         fields = ['id', 'loc_name', 'creator_id', 'creator_firstname', 'creator_lastname', 'creator_username',
                   'creator_profile_picture',
-                  'latitude', 'longitude', 'category', 'city', 'state', 'loc_picture', 'description', 'address']
+                  'latitude', 'longitude', 'kinds', 'city', 'state', 'loc_picture', 'description', 'address']
+
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = '__all__'
+        #fields = '__all__'
+        fields = ['title']
