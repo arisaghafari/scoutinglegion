@@ -10,5 +10,5 @@ urlpatterns = [
     path('get_locations/', views.get_all_locations),
     path('location_detail/<slug:id>', views.location_detail),
     path('search_by_name/<slug:name>', views.search_location_by_name),
-    #path('category/<slug:slug>', views.categoryLocation),
+    path('get_all_categories/', views.get_all_categories),
 ]

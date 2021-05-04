@@ -86,10 +86,28 @@ def get_all_locations(request):
     radius = request.query_params['radius']
     lon = request.query_params['lon']
     lat = request.query_params['lat']
+
+    center_loc = [float(lat), float(lon)]
+    state = None
+    if 'state' in request.query_params:
+        state = request.query_params['state']
+    locations = get_nearby_locations(center_loc, state)
+    own_data = LocationSerializers(locations, many=True)
+    locationList = []
     if request.query_params['kinds'] == '':
         kinds = ''
     else:
         kinds = '&kinds=' + request.query_params['kinds']
+        categories = request.query_params['kinds'].split(',')
+        for category in categories:
+            try:
+                c = Category.objects.get(title=category)
+                for d in own_data.data:
+                    p = c.location.get(id=d["id"])
+                    sr_p = LocationSerializers(p)
+                    locationList.append(sr_p.data)
+            except Category.DoesNotExist:
+                pass
     if request.query_params['rate'] == 'all':
         rate = ''
     else:
@@ -100,13 +118,11 @@ def get_all_locations(request):
 
     open_trip_map_data = json.loads(data.decode('utf-8'))
 
-    center_loc = [float(lat), float(lon)]
-    state = None
-    if 'state' in request.query_params:
-        state = request.query_params['state']
-    locations = get_nearby_locations(center_loc, state)
-    own_data = LocationSerializers(locations, many=True)
-    return Response(own_data.data + open_trip_map_data, status.HTTP_200_OK)
+    if locationList == []:
+        complete_data = open_trip_map_data
+    else:
+        complete_data = locationList + open_trip_map_data
+    return Response(complete_data, status.HTTP_200_OK)
 
 def location_detail_opentripmap(id):
     url = 'http://api.opentripmap.com/0.1/en/places/xid/' + id + '?apikey=5ae2e3f221c38a28845f05b60743dfd0a4eaed6030e537cb1f99a226'
@@ -134,6 +150,13 @@ def location_detail(request, id):
 
     return Response({"oops"})
 
+@api_view()
+def get_all_categories(request):
+    category = Category.objects.all()
+    category_sr = CategorySerializer(category, many=True)
+    return Response(category_sr.data)
+
+##########################################################
 def search_location_by_name_own_database(name):
     pass
 
@@ -149,40 +172,3 @@ def search_location_by_name(request, name):
         return Response(pdata, status.HTTP_200_OK)
     else:
         return Response({"be zoodi !!!!"}, status.HTTP_200_OK)
-"""""
-@api_view()
-def categoryLocation(request, slug):
-    radius = request.query_params['radius']
-    lon = request.query_params['lon']
-    lat = request.query_params['lat']
-    if request.query_params['kinds'] == '':
-        kinds = ''
-    else:
-        kinds = '&kinds=' + request.query_params['kinds']
-    if request.query_params['rate'] == 'all':
-        rate = ''
-    else:
-        rate = '&rate=' + request.query_params['rate']
-    url = 'http://api.opentripmap.com/0.1/en/places/radius?radius=' + radius + '&lon=' + lon + '&lat=' + lat + kinds + rate + '&apikey=5ae2e3f221c38a28845f05b60743dfd0a4eaed6030e537cb1f99a226&format=json&src_attr=wikidata'
-    with urlopen(url) as u:
-        data = u.read()
-
-    open_trip_map_data = json.loads(data.decode('utf-8'))
-
-    center_loc = [float(lat), float(lon)]
-    state = None
-    if 'state' in request.query_params:
-        state = request.query_params['state']
-    locations = get_nearby_locations(center_loc, state)
-    own_data = LocationSerializers(locations, many=True)
-    category = get_object_or_404(Category, slug=slug)
-    locationList = []
-    for d in own_data.data:
-        p = category.location.get(id = d["id"])
-        sr_p = LocationSerializers(p)
-        locationList.append(sr_p.data)
-    for d in open_trip_map_data:
-        if category.title in d["kinds"]:
-            locationList.append(d)
-    return Response(locationList, status.HTTP_200_OK)
-"""""
