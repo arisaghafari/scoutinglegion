@@ -6,6 +6,8 @@ from .serializers import *
 from .models import Location, Category
 from shapely import geometry
 from urllib.request import urlopen
+from lxml import html
+import requests
 import json
 
 
@@ -80,6 +82,25 @@ def is_inside(center_loc, loc, radius=0.05):
     point_2 = geometry.Point(loc[0], loc[1])
     circle_buffer = point_1.buffer(radius)
     return circle_buffer.contains(point_2)
+
+
+def get_image(url):
+    """
+        example:
+        url = "https://commons.wikimedia.org/wiki/File:Roaming_Academy_-_CIN%C3%89TRACTS_BY_OTHER_MEANS%2C_NOTES_FROM_TEHRAN%2C_Sazmanab%2C_Apr_2015.jpg"
+        response = get_image(url)
+        if response is not None:
+            print(response)
+    """
+    html_page = requests.get(url)
+    document = html.fromstring(html_page.text)
+    try:
+        img_url = document.xpath('//div[@class="fullImageLink"]//img/@src')
+        return img_url
+    except:
+        return None
+
+
 
 @api_view()
 def get_all_locations(request):
