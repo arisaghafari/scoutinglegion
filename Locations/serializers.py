@@ -4,6 +4,12 @@ from rest_framework.validators import UniqueValidator
 
 from .models import *
 
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        #fields = '__all__'
+        fields = ['id','title']
+
 
 class LocationSerializers(serializers.ModelSerializer):
     creator_id = serializers.IntegerField(source='creator.pk', required=False)
@@ -11,6 +17,8 @@ class LocationSerializers(serializers.ModelSerializer):
     creator_lastname = serializers.CharField(source='creator.lastname', required=False)
     creator_profile_picture = serializers.ImageField(source='creator.profile_picture', required=False)
     creator_username = serializers.CharField(source='creator.username', required=False)
+    #kinds = CategorySerializer(many=True)
+    kinds = serializers.StringRelatedField(many=True)
 
     class Meta:
         model = Location
@@ -19,8 +27,3 @@ class LocationSerializers(serializers.ModelSerializer):
                   'latitude', 'longitude', 'kinds', 'city', 'state', 'loc_picture', 'description', 'address']
 
 
-class CategorySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Category
-        #fields = '__all__'
-        fields = ['title']
