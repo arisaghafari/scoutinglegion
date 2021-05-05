@@ -83,7 +83,6 @@ def is_inside(center_loc, loc, radius=0.05):
     circle_buffer = point_1.buffer(radius)
     return circle_buffer.contains(point_2)
 
-
 def get_image(url):
     """
         example:
@@ -99,7 +98,6 @@ def get_image(url):
         return img_url
     except:
         return None
-
 
 
 @api_view()
