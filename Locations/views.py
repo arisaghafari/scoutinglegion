@@ -83,7 +83,7 @@ def is_inside(center_loc, loc, radius=0.05):
     circle_buffer = point_1.buffer(radius)
     return circle_buffer.contains(point_2)
 
-#def get_image(url):
+def get_image(url):
     """
         example:
         url = "https://commons.wikimedia.org/wiki/File:Roaming_Academy_-_CIN%C3%89TRACTS_BY_OTHER_MEANS%2C_NOTES_FROM_TEHRAN%2C_Sazmanab%2C_Apr_2015.jpg"
@@ -91,13 +91,13 @@ def is_inside(center_loc, loc, radius=0.05):
         if response is not None:
             print(response)
     """
-#    html_page = requests.get(url)
-#    document = html.fromstring(html_page.text)
-#    try:
-#        img_url = document.xpath('//div[@class="fullImageLink"]//img/@src')
-#        return img_url
-#    except:
-#        return None
+    html_page = requests.get(url)
+    document = html.fromstring(html_page.text)
+    try:
+        img_url = document.xpath('//div[@class="fullImageLink"]//img/@src')
+        return img_url
+    except:
+        return None
 
 
 @api_view()
@@ -148,8 +148,8 @@ def location_detail_opentripmap(id):
     with urlopen(url) as u:
         data = u.read()
     l = json.loads(data.decode('utf-8'))
-    #image_url = l["image"]
-    #l["image"] = get_image(image_url)
+    image_url = l["image"]
+    l["image"] = get_image(image_url)
     return l
 
 @api_view()
