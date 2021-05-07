@@ -11,7 +11,7 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = ['id','title']
 
 
-class LocationSerializers(serializers.ModelSerializer):
+class GetLocationSerializers(serializers.ModelSerializer):
     creator_id = serializers.IntegerField(source='creator.pk', required=False)
     creator_firstname = serializers.CharField(source='creator.firstname', required=False)
     creator_lastname = serializers.CharField(source='creator.lastname', required=False)
@@ -23,7 +23,14 @@ class LocationSerializers(serializers.ModelSerializer):
     class Meta:
         model = Location
         fields = ['id', 'loc_name', 'creator_id', 'creator_firstname', 'creator_lastname', 'creator_username',
-                  'creator_profile_picture',
+                  'creator_profile_picture', 'is_private',
+                  'latitude', 'longitude', 'kinds', 'city', 'state', 'loc_picture', 'description', 'address']
+
+
+class LocationSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = Location
+        fields = ['id', 'loc_name', 'creator', 'is_private',
                   'latitude', 'longitude', 'kinds', 'city', 'state', 'loc_picture', 'description', 'address']
 
 

@@ -14,7 +14,7 @@ import json
 
 class GetLocationDetailsViewSet(generics.ListAPIView):
     permission_classes = (permissions.AllowAny,)
-    serializer_class = LocationSerializers
+    serializer_class = GetLocationSerializers
 
     def get(self, request, *args, **kwargs):
         lat = float(self.request.query_params['lat'])
@@ -39,12 +39,13 @@ class CreateLocationViewSet(generics.CreateAPIView):
 
 class ViewLocationViewSet(generics.ListAPIView):
     queryset = Location.objects.all()
-    serializer_class = LocationSerializers
+    serializer_class = GetLocationSerializers
 
     def get(self, request, *args, **kwargs):
         queryset = Location.objects.filter(creator=self.request.user)
+        serializer = self.get_serializer(queryset, many=True)
         if 'page' in list(self.request.query_params):
-            paginator = Paginator(queryset, 10)
+            paginator = Paginator(serializer.data, 10)
             if int(self.request.query_params['page']) <= paginator.num_pages:
                 data = paginator.page(self.request.query_params['page']).object_list
                 return Response(data={
@@ -52,12 +53,12 @@ class ViewLocationViewSet(generics.ListAPIView):
                     'data': data
                 }
                 )
-        serializer = self.get_serializer(queryset, many=True)
+        # serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
 
 class NearbyLocationsViewSet(generics.ListAPIView):
-    serializer_class = LocationSerializers
+    serializer_class = GetLocationSerializers
     permission_classes = (permissions.AllowAny,)
 
     def get(self, request, *args, **kwargs):
@@ -122,7 +123,7 @@ def get_all_locations(request):
     if 'state' in request.query_params:
         state = request.query_params['state']
     locations = get_nearby_locations(center_loc, state)
-    own_data = LocationSerializers(locations, many=True)
+    own_data = GetLocationSerializers(locations, many=True)
     locationList = []
     if request.query_params['kinds'] == '':
         kinds = ''
@@ -168,7 +169,7 @@ def location_detail(request, id):
     try:
         if type(id) == int:
             location = Location.objects.get(id = id)
-            l = LocationSerializers(location)
+            l = GetLocationSerializers(location)
             return Response(l.data, status.HTTP_200_OK)
         else:
             l = location_detail_opentripmap(id)
