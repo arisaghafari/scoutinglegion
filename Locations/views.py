@@ -8,6 +8,7 @@ from shapely import geometry
 from urllib.request import urlopen
 from lxml import html
 import requests
+from django.core.paginator import Paginator
 import json
 
 
@@ -42,6 +43,15 @@ class ViewLocationViewSet(generics.ListAPIView):
 
     def get(self, request, *args, **kwargs):
         queryset = Location.objects.filter(creator=self.request.user)
+        if 'page' in list(self.request.query_params):
+            paginator = Paginator(queryset, 10)
+            if int(self.request.query_params['page']) <= paginator.num_pages:
+                data = paginator.page(self.request.query_params['page']).object_list
+                return Response(data={
+                    'has_next': int(self.request.query_params['page']) < paginator.num_pages,
+                    'data': data
+                }
+                )
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -82,6 +92,7 @@ def is_inside(center_loc, loc, radius=0.05):
     point_2 = geometry.Point(loc[0], loc[1])
     circle_buffer = point_1.buffer(radius)
     return circle_buffer.contains(point_2)
+
 
 def get_image(url):
     """
