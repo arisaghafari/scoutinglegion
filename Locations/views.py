@@ -11,6 +11,8 @@ import requests
 from django.core.paginator import Paginator
 import json
 from rest_framework import generics
+from geopy.geocoders import Nominatim
+
 
 class CreateLocationViewSet(generics.CreateAPIView):
     queryset = Location.objects.all()
@@ -19,12 +21,13 @@ class CreateLocationViewSet(generics.CreateAPIView):
     def perform_create(self, serializer):
         return serializer.save(creator=self.request.user)
 
+
 class ViewLocationViewSet(generics.ListAPIView):
     queryset = Location.objects.all()
     serializer_class = GetLocationSerializers
 
     def get(self, request, *args, **kwargs):
-        queryset = Location.objects.filter(creator=self.request.user)
+        queryset = Location.objects.filter(creator=self.request.user).order_by('-id')
         serializer = self.get_serializer(queryset, many=True)
         if 'page' in list(self.request.query_params):
             paginator = Paginator(serializer.data, 10)
@@ -36,7 +39,9 @@ class ViewLocationViewSet(generics.ListAPIView):
                 }
                 )
         # serializer = self.get_serializer(queryset, many=True)
+        print(get_city_state(lat=35.7243253,lon=51.4083653))
         return Response(serializer.data)
+
 
 class AllLocations(generics.ListAPIView):
     serializer_class = GetLocationSerializers
@@ -60,9 +65,9 @@ class AllLocations(generics.ListAPIView):
         locations = []
         all_loc = []
         if state is not None:
-            all_loc = Location.objects.filter(state=state)
+            all_loc = Location.objects.filter(state=state, is_private=False)
         else:
-            all_loc = Location.objects.all()
+            all_loc = Location.objects.filter(is_private=False)
         for loc in all_loc:
             curr_loc = [loc.latitude, loc.longitude]
             if self.is_inside(center_loc, curr_loc) is True:
@@ -177,3 +182,10 @@ def search_location_by_name(request, name):
         return Response(pdata, status.HTTP_200_OK)
     else:
         return Response({"be zoodi !!!!"}, status.HTTP_200_OK)
+
+
+def get_city_state(lat, lon):
+    geolocator = Nominatim(user_agent="geoapiExercises")
+    location = geolocator.reverse(str(lat) + "," + str(lon))
+    address = location.raw['address']
+    return location
