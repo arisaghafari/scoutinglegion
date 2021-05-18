@@ -1,8 +1,5 @@
 from django.contrib import admin
-
-# Register your models here.
 from .models import *
-
 
 class LocationAdmin(admin.ModelAdmin):
     list_display = ("name", "kinds_to_str", "creator", "latitude", "longitude")

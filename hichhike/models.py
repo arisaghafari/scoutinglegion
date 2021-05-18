@@ -19,13 +19,25 @@ class Hichhike(models.Model):
     source = models.CharField(max_length=200)
     destination = models.CharField(max_length=200)
     fellow_traveler_num = models.IntegerField()
-    description = models.TextField()
-    cities = ArrayField(models.CharField(max_length=200))
+    description = models.TextField(blank=True)
+    cities = ArrayField(models.CharField(max_length=200), blank=True)
     created = models.DateTimeField(auto_now_add=True)
-    trip_time = models.DateTimeField()
+    trip_time = models.DateTimeField(blank=True)
 
     def __str__(self):
-        return self.creator + "_" + self.destination
+        return str(self.creator) + "_" + self.destination
 
-    def jpublish(self):
-        return jalali_converter(self.publish)
+    def jcreated(self):
+        return jalali_converter(self.created)
+
+    def jtrip_time(self):
+        return jalali_converter(self.trip_time)
+
+    def cities_list(self):
+        list = ""
+        for c in self.cities:
+            if list == "":
+                list = str(c)
+            else:
+                list += ' ,' + str(c)
+        return list
