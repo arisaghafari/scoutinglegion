@@ -1,20 +1,44 @@
-from django.shortcuts import render
-from django.http import Http404
-from rest_framework.views import APIView
+from django.core.paginator import Paginator
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, permissions
 from .models import *
 from .serializers import *
+from rest_framework import generics
 
-class HichhikeList(APIView):
-    def get(self, request):
-        trip = Hichhike.objects.all()
-        sr_trip = HichhikeSerializer(trip, many=True)
+class HichhikeList(generics.ListAPIView):
+    queryset = Hichhike.objects.all()
+    serializer_class = HichhikeSerializer
+
+    def get(self, request, *args, **kwargs):
+        queryset = Hichhike.objects.filter(creator=self.request.user).order_by('-created')
+        sr_trip = self.get_serializer(queryset, many=True)
+        if 'page' in list(self.request.query_params):
+            paginator = Paginator(sr_trip.data, 10)
+            if int(self.request.query_params['page']) <= paginator.num_pages:
+                data = paginator.page(self.request.query_params['page']).object_list
+                return Response(data={
+                    'has_next': int(self.request.query_params['page']) < paginator.num_pages,
+                    'data': data
+                }
+                )
         return Response(sr_trip.data)
 
-    def post(self, request):
-        sr_trip = HichhikeSerializer(data=request.data)
-        if sr_trip.is_valid():
-            sr_trip.save(creator=self.request.user)
-            return Response(sr_trip.data, status=status.HTTP_201_CREATED)
-        return Response(sr_trip.errors, status=status.HTTP_400_BAD_REQUEST)
+class CreateHichhike(generics.CreateAPIView):
+    queryset = Hichhike.objects.all()
+    serializer_class = HichhikeSerializer
+
+    def perform_create(self, serializer):
+        return serializer.save(creator=self.request.user)
+
+class GetHichhikeDetails(generics.ListAPIView):
+    serializer_class = HichhikeSerializer
+    permission_classes = (permissions.AllowAny,)
+
+    def get(self, request, **kwargs):
+        if Hichhike.objects.filter(id=kwargs['id']).exists():
+            trip = Hichhike.objects.get(id=kwargs['id'])
+            sr_trip = self.get_serializer(trip)
+            return Response(sr_trip.data, status.HTTP_200_OK)
+        else:
+            return Response({"this trip does'nt exist!!!"}, status.HTTP_200_OK)
+
