@@ -21,12 +21,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = '^5-+(j117fc@*^v24c1y_fm0mp7%92i)!-336+&h7!s#c@zow('
+#SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+#DEBUG = int(os.environ.get("DEBUG", default=0))
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['*']
+#ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
 
 # Application definition
 
@@ -47,6 +49,8 @@ INSTALLED_APPS = [
     'rest_auth',
     'rest_auth.registration',
     'users',
+    'Locations',
+    'hichhike.apps.HichhikeConfig'
 ]
 
 MIDDLEWARE = [
@@ -89,10 +93,10 @@ WSGI_APPLICATION = 'ScoutingLegion.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'sl_db',
+        'NAME': 'db_sl',
         'USER': 'postgres',
         'PASSWORD': '1234',
-        'HOST': '127.0.0.1',
+        'HOST': 'scoutinglegion_db_sl_1',
         'PORT': '5432',
     }
 }
@@ -108,7 +112,7 @@ CORS_ORIGIN_WHITELIST = [
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
 
-        'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.AllowAny',
     ],
 
     'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -178,5 +182,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+#STATIC_ROOT = os.path.join(BASE_DIR, "static")
+STATIC_ROOT = BASE_DIR / 'static'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+
+
