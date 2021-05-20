@@ -46,13 +46,14 @@ INSTALLED_APPS = [
     'rest_framework_swagger',
     'allauth',
     'allauth.account',
+    'allauth.socialaccount',
     'rest_auth',
     'rest_auth.registration',
     'users',
     'Locations',
     'hichhike.apps.HichhikeConfig'
 ]
-
+#allauth.socialaccount
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

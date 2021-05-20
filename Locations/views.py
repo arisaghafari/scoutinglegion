@@ -39,7 +39,7 @@ class ViewLocationViewSet(generics.ListAPIView):
                 }
                 )
         # serializer = self.get_serializer(queryset, many=True)
-        print(get_city_state(lat=35.7243253,lon=51.4083653))
+        # print(get_city_state(lat=35.7243253,lon=51.4083653))
         return Response(serializer.data)
 
 
