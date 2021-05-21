@@ -30,7 +30,7 @@ class TestView(TestCase):
         }
         re = self.client.generic(method="POST", path=reverse('create_hichhike'), data=json.dumps(data),
                                    content_type='application/json')
-        response = self.client.get(reverse('creator_locations'), content_type='application/json')
+        response = self.client.get(reverse('creator_hichhikes'), content_type='application/json')
         # print(re)
         self.assertEqual(self.user.creator_hichhike.count(), 1)
         self.assertNotEqual(response.content, b'[]')
