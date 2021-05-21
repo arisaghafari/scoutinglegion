@@ -22,7 +22,7 @@ class Hichhike(models.Model):
     description = models.TextField(blank=True)
     cities = ArrayField(models.CharField(max_length=200), blank=True)
     created = models.DateTimeField(auto_now_add=True)
-    trip_time = models.DateTimeField(blank=True)
+    trip_time = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
         return str(self.creator) + "_" + self.destination
