@@ -12,6 +12,7 @@ from django.core.paginator import Paginator
 import json
 from rest_framework import generics
 from geopy.geocoders import Nominatim
+from urllib.parse import quote
 
 
 class CreateLocationViewSet(generics.CreateAPIView):
@@ -160,28 +161,34 @@ class GetLocationDetails(generics.ListAPIView):
         except:
             return None
 
-# @api_view()
-# def get_all_categories(request):
-#     category = Category.objects.all()
-#     category_sr = CategorySerializer(category, many=True)
-#     return Response(category_sr.data)
-
-##########################################################
-def search_location_by_name_own_database(name):
-    pass
-
 @api_view()
-def search_location_by_name(request, name):
-    loc = search_location_by_name_own_database(name)
-    if loc == None:
-        url = 'http://api.opentripmap.com/0.1/en/places/geoname?name='+name+'&country=IR&apikey=5ae2e3f221c38a28845f05b60743dfd0a4eaed6030e537cb1f99a226'
+def get_all_categories(request):
+    category = Category.objects.all()
+    category_sr = CategorySerializer(category, many=True)
+    return Response(category_sr.data)
+
+class SearchByName(generics.ListAPIView):
+    serializer_class = GetLocationSerializers
+    permission_classes = (permissions.AllowAny,)
+    
+    def get(self, request, **kwargs):
+        name = kwargs['name']
+        openTripData = self.getOpenTripMap(quote(name))
+        return Response(openTripData, status.HTTP_200_OK)
+
+    def getOpenTripMap(self, name):
+        url =  'https://nominatim.openstreetmap.org/search?q=' + name + '&limit=5&format=json&addressdetails=1&accept-language=en'
         with urlopen(url) as u:
             data = u.read()
-
-        pdata = json.loads(data.decode('utf-8'))
-        return Response(pdata, status.HTTP_200_OK)
-    else:
-        return Response({"be zoodi !!!!"}, status.HTTP_200_OK)
+        data = json.loads(data.decode('utf-8'))
+        dataList = []
+        for d in data:
+            d['xid'] = d['osm_type'][0].upper() + str(d["osm_id"])
+            dataList.append(d)            
+        
+        return dataList
+    def getOwnData(self, name):
+        pass
 
 
 def get_city_state(lat, lon):
