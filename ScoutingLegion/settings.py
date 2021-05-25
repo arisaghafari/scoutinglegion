@@ -94,10 +94,10 @@ WSGI_APPLICATION = 'ScoutingLegion.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'sl_db',
+        'NAME': 'db_sl',
         'USER': 'postgres',
         'PASSWORD': '1234',
-        'HOST': 'localhost',
+        'HOST': 'scoutinglegion_db_sl_1',
         'PORT': '5432',
     }
 }
