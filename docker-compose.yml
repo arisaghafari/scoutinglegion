@@ -13,8 +13,8 @@ services:
       - db_sl
     ports:
       - "8000:8000"
- #   networks:
- #     - main
+    # networks:
+    #   - main
     restart: on-failure
   db_sl:
     image: postgres:12.0-alpine
@@ -25,8 +25,8 @@ services:
       - POSTGRES_PASSWORD=1234
       - POSTGRES_DB=db_sl
       - POSTGRES_PORT=5432
-    #networks:
-    #  - main
+    # networks:
+    #   - main
     ports:
       - "5432:5432"
     restart: on-failure
@@ -45,5 +45,5 @@ services:
   #  - ./nginx.conf:/etc/nginx/nginx.conf
 volumes:
   postgres_data:
-#networks:
-#  main:
+# networks:
+#   main:

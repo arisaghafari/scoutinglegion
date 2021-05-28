@@ -31,7 +31,7 @@ class GetLocationSerializers(serializers.ModelSerializer):
         data = super(GetLocationSerializers, self).to_representation(instance)
         request = self.context.get('request', None)
         if request.method == 'GET':
-            data['xid'] = data['id']
+            data['xid'] = 'own_'+ str(data['id'])
             data['image'] = [data['image']]
             data['point'] = {'lon': data['longitude'], 'lat': data['latitude']}
             data['kinds'] = ",".join(data['kinds'])

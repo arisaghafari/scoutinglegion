@@ -23,7 +23,6 @@ class Location(models.Model):
     creator = models.ForeignKey(CustomUser, related_name="creator_location", on_delete=models.CASCADE, default=None)
     is_private = models.BooleanField(_('is private location'), default=False)
     kinds = models.ManyToManyField(Category, related_name="location")
-
     class Meta:
         unique_together = ('latitude', 'longitude',)
 

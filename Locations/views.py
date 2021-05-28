@@ -13,6 +13,7 @@ import json
 from rest_framework import generics
 from geopy.geocoders import Nominatim
 from urllib.parse import quote
+from rest_framework import filters
 
 
 class CreateLocationViewSet(generics.CreateAPIView):
@@ -167,14 +168,20 @@ def get_all_categories(request):
     category_sr = CategorySerializer(category, many=True)
     return Response(category_sr.data)
 
-class SearchByName(generics.ListAPIView):
+class SearchByName(generics.ListCreateAPIView):
+    queryset = Location.objects.all()
     serializer_class = GetLocationSerializers
     permission_classes = (permissions.AllowAny,)
+    search_fields = ['name']
+    filter_backends = (filters.SearchFilter,)       
     
     def get(self, request, **kwargs):
-        name = kwargs['name']
+        # queryset = Location.objects.all()
+        sr_queryset = self.get_serializer(self.get_queryset(), many=True)
+        name = request.query_params['search']
         openTripData = self.getOpenTripMap(quote(name))
-        return Response(openTripData, status.HTTP_200_OK)
+        allData = sr_queryset.data + openTripData
+        return Response(allData, status.HTTP_200_OK)
 
     def getOpenTripMap(self, name):
         url =  'https://nominatim.openstreetmap.org/search?q=' + name + '&limit=5&format=json&addressdetails=1&accept-language=en'
@@ -187,8 +194,6 @@ class SearchByName(generics.ListAPIView):
             dataList.append(d)            
         
         return dataList
-    def getOwnData(self, name):
-        pass
 
 
 def get_city_state(lat, lon):
