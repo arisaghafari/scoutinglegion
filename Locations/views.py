@@ -175,25 +175,24 @@ class SearchByName(generics.ListCreateAPIView):
     search_fields = ['name']
     filter_backends = (filters.SearchFilter,)       
     
-    def get(self, request, **kwargs):
-        # queryset = Location.objects.all()
-        sr_queryset = self.get_serializer(self.get_queryset(), many=True)
-        name = request.query_params['search']
-        openTripData = self.getOpenTripMap(quote(name))
-        allData = sr_queryset.data + openTripData
-        return Response(allData, status.HTTP_200_OK)
+    # def get(self, request, **kwargs):
+    #     sr_queryset = self.get_serializer(self.get_queryset(), many=True)
+    #     name = request.query_params['search']
+    #     openTripData = self.getOpenTripMap(quote(name))
+    #     allData = sr_queryset.data + openTripData
+    #     return Response(allData, status.HTTP_200_OK)
 
-    def getOpenTripMap(self, name):
-        url =  'https://nominatim.openstreetmap.org/search?q=' + name + '&limit=5&format=json&addressdetails=1&accept-language=en'
-        with urlopen(url) as u:
-            data = u.read()
-        data = json.loads(data.decode('utf-8'))
-        dataList = []
-        for d in data:
-            d['xid'] = d['osm_type'][0].upper() + str(d["osm_id"])
-            dataList.append(d)            
+    # def getOpenTripMap(self, name):
+    #     url =  'https://nominatim.openstreetmap.org/search?q=' + name + '&limit=5&format=json&addressdetails=1&accept-language=en'
+    #     with urlopen(url) as u:
+    #         data = u.read()
+    #     data = json.loads(data.decode('utf-8'))
+    #     dataList = []
+    #     for d in data:
+    #         d['xid'] = d['osm_type'][0].upper() + str(d["osm_id"])
+    #         dataList.append(d)            
         
-        return dataList
+    #     return dataList
 
 
 def get_city_state(lat, lon):
