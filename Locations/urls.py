@@ -10,4 +10,6 @@ urlpatterns = [
     # re_path(r'search_by_name/(?P[-\w|\W]+)/', SearchByName.as_view()),
     path('search_by_name/', SearchByName.as_view()),
     path('getCategory/', get_all_categories),
+    path('comments/', CommentList.as_view()),
+    path('comments/<int:pk>/', CommentDetail.as_view()),
 ]

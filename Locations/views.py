@@ -14,6 +14,7 @@ from rest_framework import generics
 from geopy.geocoders import Nominatim
 from urllib.parse import quote
 from rest_framework import filters
+from .permissions import IsOwnerOrReadOnly
 
 
 class CreateLocationViewSet(generics.CreateAPIView):
@@ -168,31 +169,35 @@ def get_all_categories(request):
     category_sr = CategorySerializer(category, many=True)
     return Response(category_sr.data)
 
-class SearchByName(generics.ListCreateAPIView):
+class SearchByName(generics.ListAPIView):
     queryset = Location.objects.all()
     serializer_class = GetLocationSerializers
     permission_classes = (permissions.AllowAny,)
     search_fields = ['name']
     filter_backends = (filters.SearchFilter,)       
     
-    # def get(self, request, **kwargs):
-    #     sr_queryset = self.get_serializer(self.get_queryset(), many=True)
-    #     name = request.query_params['search']
-    #     openTripData = self.getOpenTripMap(quote(name))
-    #     allData = sr_queryset.data + openTripData
-    #     return Response(allData, status.HTTP_200_OK)
+    # def get(self, request, *args, **kwargs):
+    #     return self.list(request, *args, **kwargs)
 
-    # def getOpenTripMap(self, name):
-    #     url =  'https://nominatim.openstreetmap.org/search?q=' + name + '&limit=5&format=json&addressdetails=1&accept-language=en'
-    #     with urlopen(url) as u:
-    #         data = u.read()
-    #     data = json.loads(data.decode('utf-8'))
-    #     dataList = []
-    #     for d in data:
-    #         d['xid'] = d['osm_type'][0].upper() + str(d["osm_id"])
-    #         dataList.append(d)            
+    def get(self, request, *args, **kwargs):
+        # OwnData = self.list(request, *args, **kwargs)
+        sr_queryset = self.get_serializer(self.get_queryset(), many=True)
+        name = request.query_params['search']
+        openTripData = self.getOpenTripMap(quote(name))
+        allData = sr_queryset.data + openTripData
+        return Response(allData, status.HTTP_200_OK)
+
+    def getOpenTripMap(self, name):
+        url =  'https://nominatim.openstreetmap.org/search?q=' + name + '&limit=5&format=json&addressdetails=1&accept-language=en'
+        with urlopen(url) as u:
+            data = u.read()
+        data = json.loads(data.decode('utf-8'))
+        dataList = []
+        for d in data:
+            d['xid'] = d['osm_type'][0].upper() + str(d["osm_id"])
+            dataList.append(d)            
         
-    #     return dataList
+        return dataList
 
 
 def get_city_state(lat, lon):
@@ -200,3 +205,17 @@ def get_city_state(lat, lon):
     location = geolocator.reverse(str(lat) + "," + str(lon))
     address = location.raw['address']
     return location
+
+class CommentList(generics.ListCreateAPIView):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializers
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def perform_create(self, serializer):
+        serializer.save(creator=self.request.user)
+
+class CommentDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializers
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly,
+                          IsOwnerOrReadOnly]

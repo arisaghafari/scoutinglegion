@@ -29,3 +29,16 @@ class Location(models.Model):
 
     def __str__(self):
         return self.name
+
+class Comment(models.Model):
+    creator = models.ForeignKey(CustomUser, related_name="creator_comment", on_delete=models.CASCADE, default=None)
+    location = models.ForeignKey(Location,on_delete=models.CASCADE,related_name='comments')
+    body = models.TextField()
+    created_on = models.DateTimeField(auto_now_add=True)
+    active = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ['created_on']
+
+    def __str__(self):
+        return 'Comment {} by {}'.format(self.body, self.creator.username)
