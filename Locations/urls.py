@@ -1,4 +1,5 @@
 
+from django.conf.urls import url
 from django.urls import include, path, re_path
 from .views import *
 
@@ -12,4 +13,5 @@ urlpatterns = [
     path('getCategory/', get_all_categories),
     path('comments/', CommentList.as_view()),
     path('comments/<int:pk>/', CommentDetail.as_view()),
+    url(r'^ratings/', include('star_ratings.urls', namespace='ratings', app_name='ratings')),
 ]
