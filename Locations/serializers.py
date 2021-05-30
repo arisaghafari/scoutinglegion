@@ -50,10 +50,9 @@ class CommentSerializers(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
     creator_profile_picture = serializers.ImageField(source='creator.profile_picture', required=False)
     creator_username = serializers.ReadOnlyField(source='creator.username')
-    location_id = serializers.ReadOnlyField(source='location.id')
-
+    
     class Meta:
-        models = Comment
-        fields = ['id', 'creator_profile_picture', 'creator_username', 'location_id', 'body', 'created_on', 'active']
+        model = Comment
+        fields = ['id', 'creator_profile_picture', 'creator_username', 'location', 'body', 'created_on', 'active']
 
 
