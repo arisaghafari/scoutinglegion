@@ -54,6 +54,7 @@ class AllLocations(generics.ListAPIView):
     permission_classes = (permissions.AllowAny,)
 
     def get(self, request, *args, **kwargs):
+        # return Response({'hi'})
         if self.OwnData(request) == []:
             complete_data = self.OpenTripMapData(request)
         else:
@@ -75,6 +76,19 @@ class AllLocations(generics.ListAPIView):
         else:
             all_loc = Location.objects.filter(is_private=False)
         for loc in all_loc:
+            curr_loc = [loc.latitude, loc.longitude]
+            if self.is_inside(center_loc, curr_loc) is True:
+                locations.append(loc)
+        return locations
+
+    def private_location(self, state, center_loc):
+        private = []
+        locations = []
+        if state is not None:
+            private = Location.objects.filter(state=state, creator=self.request.user, is_private=True)
+        else:
+            private = Location.objects.filter(creator=self.request.user, is_private=True)
+        for loc in private:
             curr_loc = [loc.latitude, loc.longitude]
             if self.is_inside(center_loc, curr_loc) is True:
                 locations.append(loc)
@@ -107,19 +121,26 @@ class AllLocations(generics.ListAPIView):
         if 'state' in request.query_params:
             state = request.query_params['state']
         locations = self.get_nearby_locations(center_loc, state)
+        private_locations = self.private_location(state, center_loc)
+        own_private = self.get_serializer(private_locations, many=True)
         own_data = self.get_serializer(locations, many=True)
-
+        data = []
+        for d in own_private.data:
+            data.append(d)
+        for d in own_data.data:
+            data.append(d)
+        
         locationList = []
         if request.query_params['kinds'] == '':
-            for o in own_data.data:
+            for o in data:
                 o['xid'] = 'own-' + str(o['id'])
-            return own_data.data
+            return data
         else:
             categories = request.query_params['kinds'].split(',')
             for category in categories:
                 try:
                     c = Category.objects.get(title=category)
-                    for d in own_data.data:
+                    for d in data:
                         if c.location.filter(id=d["id"]).exists():
                             p = c.location.get(id=d["id"])
                             sr_p = self.get_serializer(p)
