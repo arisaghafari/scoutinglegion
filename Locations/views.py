@@ -1,3 +1,6 @@
+from django.contrib.postgres import search
+from django.db.models.query import QuerySet
+from django.db.models import Q
 from django.shortcuts import render, get_object_or_404
 from rest_framework import generics, permissions, status
 from rest_framework.decorators import api_view
@@ -13,8 +16,8 @@ import json
 from rest_framework import generics
 from geopy.geocoders import Nominatim
 from urllib.parse import quote
-from rest_framework import filters
 from .permissions import IsOwnerOrReadOnly
+from django.contrib.postgres.search import TrigramSimilarity
 
 
 class CreateLocationViewSet(generics.CreateAPIView):
@@ -170,19 +173,14 @@ def get_all_categories(request):
     return Response(category_sr.data)
 
 class SearchByName(generics.ListAPIView):
-    queryset = Location.objects.all()
     serializer_class = GetLocationSerializers
     permission_classes = (permissions.AllowAny,)
-    search_fields = ['name']
-    filter_backends = (filters.SearchFilter,)       
     
-    # def get(self, request, *args, **kwargs):
-    #     return self.list(request, *args, **kwargs)
-
-    def get(self, request, *args, **kwargs):
-        # OwnData = self.list(request, *args, **kwargs)
-        sr_queryset = self.get_serializer(self.get_queryset(), many=True)
+    def get(self, request):
         name = request.query_params['search']
+        queryset = Location.objects.filter(Q(name__icontains = name) | Q(description__icontains = name) | Q(address__icontains = name))
+        # queryset = Location.objects.annotate(similarity=TrigramSimilarity('name', name),).filter(similarity__gt=0.3)
+        sr_queryset = self.get_serializer(queryset, many=True)
         openTripData = self.getOpenTripMap(quote(name))
         allData = sr_queryset.data + openTripData
         return Response(allData, status.HTTP_200_OK)

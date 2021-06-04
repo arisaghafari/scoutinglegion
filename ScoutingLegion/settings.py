@@ -53,7 +53,7 @@ INSTALLED_APPS = [
     'users',
     'Locations',
     'hichhike.apps.HichhikeConfig',
-    'django_filters'
+    'django.contrib.postgres'
 ]
 #allauth.socialaccount
 MIDDLEWARE = [
