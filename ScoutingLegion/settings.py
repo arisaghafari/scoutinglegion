@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+    'star_ratings',
     'corsheaders',
     'rest_framework',
     'rest_framework.authtoken',
@@ -51,7 +52,8 @@ INSTALLED_APPS = [
     'rest_auth.registration',
     'users',
     'Locations',
-    'hichhike.apps.HichhikeConfig'
+    'hichhike.apps.HichhikeConfig',
+    'django.contrib.postgres'
 ]
 #allauth.socialaccount
 MIDDLEWARE = [
@@ -131,7 +133,8 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
     ],
-    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema'
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
 
 }
 

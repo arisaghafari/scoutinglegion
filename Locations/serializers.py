@@ -1,3 +1,4 @@
+from django.db.models import fields
 from rest_framework import serializers
 from users.serializers import UserDetailSerializers
 from rest_framework.validators import UniqueValidator
@@ -31,7 +32,7 @@ class GetLocationSerializers(serializers.ModelSerializer):
         data = super(GetLocationSerializers, self).to_representation(instance)
         request = self.context.get('request', None)
         if request.method == 'GET':
-            data['xid'] = data['id']
+            data['xid'] = 'own_'+ str(data['id'])
             data['image'] = [data['image']]
             data['point'] = {'lon': data['longitude'], 'lat': data['latitude']}
             data['kinds'] = ",".join(data['kinds'])
@@ -44,5 +45,14 @@ class LocationSerializers(serializers.ModelSerializer):
         model = Location
         fields = ['id', 'name', 'creator', 'is_private',
                   'latitude', 'longitude', 'kinds', 'city', 'state', 'image', 'description', 'address']
+
+class CommentSerializers(serializers.ModelSerializer):
+    id = serializers.IntegerField(read_only=True)
+    creator_profile_picture = serializers.ImageField(source='creator.profile_picture', required=False)
+    creator_username = serializers.ReadOnlyField(source='creator.username')
+    
+    class Meta:
+        model = Comment
+        fields = ['id', 'creator_profile_picture', 'creator_username', 'location', 'body', 'created_on', 'active']
 
 

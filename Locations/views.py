@@ -1,3 +1,6 @@
+from django.contrib.postgres import search
+from django.db.models.query import QuerySet
+from django.db.models import Q
 from django.shortcuts import render, get_object_or_404
 from rest_framework import generics, permissions, status
 from rest_framework.decorators import api_view
@@ -13,6 +16,8 @@ import json
 from rest_framework import generics
 from geopy.geocoders import Nominatim
 from urllib.parse import quote
+from .permissions import IsOwnerOrReadOnly
+from django.contrib.postgres.search import TrigramSimilarity
 
 
 class CreateLocationViewSet(generics.CreateAPIView):
@@ -171,10 +176,14 @@ class SearchByName(generics.ListAPIView):
     serializer_class = GetLocationSerializers
     permission_classes = (permissions.AllowAny,)
     
-    def get(self, request, **kwargs):
-        name = kwargs['name']
+    def get(self, request):
+        name = request.query_params['search']
+        queryset = Location.objects.filter(Q(name__icontains = name) | Q(description__icontains = name) | Q(address__icontains = name))
+        # queryset = Location.objects.annotate(similarity=TrigramSimilarity('name', name),).filter(similarity__gt=0.3)
+        sr_queryset = self.get_serializer(queryset, many=True)
         openTripData = self.getOpenTripMap(quote(name))
-        return Response(openTripData, status.HTTP_200_OK)
+        allData = sr_queryset.data + openTripData
+        return Response(allData, status.HTTP_200_OK)
 
     def getOpenTripMap(self, name):
         url =  'https://nominatim.openstreetmap.org/search?q=' + name + '&limit=5&format=json&addressdetails=1&accept-language=en'
@@ -187,8 +196,6 @@ class SearchByName(generics.ListAPIView):
             dataList.append(d)            
         
         return dataList
-    def getOwnData(self, name):
-        pass
 
 
 def get_city_state(lat, lon):
@@ -196,3 +203,17 @@ def get_city_state(lat, lon):
     location = geolocator.reverse(str(lat) + "," + str(lon))
     address = location.raw['address']
     return location
+
+class CommentList(generics.ListCreateAPIView):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializers
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def perform_create(self, serializer):
+        serializer.save(creator=self.request.user)
+
+class CommentDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializers
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly,
+                          IsOwnerOrReadOnly]

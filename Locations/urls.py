@@ -1,4 +1,5 @@
 
+from django.conf.urls import url
 from django.urls import include, path, re_path
 from .views import *
 
@@ -7,7 +8,10 @@ urlpatterns = [
     path('creator_locations/', ViewLocationViewSet.as_view(), name='creator_locations'),
     path('location_detail/<slug:id>', GetLocationDetails.as_view()),
     path('get_locations/', AllLocations.as_view()),
-    # path('search_by_name/<slug:name>', SearchByName.as_view()),
-    re_path(r'search_by_name/(?P<name>[-\w|\W]+)/', SearchByName.as_view()),
-    # ?P<name>[\w|\W]+
+    # re_path(r'search_by_name/(?P[-\w|\W]+)/', SearchByName.as_view()),
+    path('search_by_name/', SearchByName.as_view()),
+    path('getCategory/', get_all_categories),
+    path('comments/', CommentList.as_view()),
+    path('comments/<int:pk>/', CommentDetail.as_view()),
+    # url(r'^ratings/', include('star_ratings.urls', namespace='ratings', app_name='ratings')),
 ]

@@ -31,6 +31,7 @@ RUN apk add cairo-dev \
 
 RUN pip install --upgrade pip
 RUN /usr/local/bin/python -m pip install --upgrade pip
+RUN apk add postgresql-contrib
 RUN pip install cryptography
 RUN apk add postgresql-dev
 
