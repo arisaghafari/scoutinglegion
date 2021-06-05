@@ -1,3 +1,5 @@
+from datetime import time
+
 from django.core.paginator import Paginator
 from rest_framework.response import Response
 from rest_framework import status, permissions
@@ -69,19 +71,48 @@ class SuggestHichhike(generics.ListAPIView):
     def suggester(self, trips):
         sources = [t.source for t in trips]
         destinations = [t.destination for t in trips]
-        gender = [t.creator_type for t in trips][0]
+        gender = [t.creator_gender for t in trips]
 
-        return self.get_trips(sources, destinations)
+        return self.get_trips(sources, destinations, gender)
         # return (query1 | query2).distinct()
 
-    def get_trips(self, sources, destinations):
-        first = Hichhike.objects.filter(creator_type='d', source__in=sources, destination__in=destinations)
+    def get_trips(self, sources, destinations, gender):
+        first = Hichhike.objects.filter(creator_type='d', creator_gender__in=gender).\
+            filter(source__in=sources, destination__in=destinations).order_by('-created')
         print(first)
-        second = Hichhike.objects.filter(creator_type='d', source__in=sources, cities__overlap=destinations)
+        second = Hichhike.objects.filter(creator_type='d', creator_gender__in=gender).\
+            filter(source__in=sources, cities__overlap=destinations).order_by('-created')
         print(second)
-        third = Hichhike.objects.filter(creator_type='d', cities__overlap=sources, destination__in=destinations)
+        third = Hichhike.objects.filter(creator_type='d', creator_gender__in=gender).\
+            filter(cities__overlap=sources, destination__in=destinations).order_by('-created')
         print(third)
         return first | second | third
 
+
+class DriverJoinRequestsViewSet(generics.ListAPIView, generics.CreateAPIView):
+    serializer_class = JoinRequestsSerializer
+
+    def get_queryset(self):
+        return JoinRequest.objects.filter(hichhike__creator=self.request.user)
+
+    def post(self, request, *args, **kwargs):
+        join_request = JoinRequest.objects.get(pk=self.request.data['id'])
+        if int(self.request.data['accept']) == 1:
+            passenger = join_request.passenger
+            Participants.objects.create(hichhike=join_request.hichhike, passenger=join_request.passenger)
+            join_request.hichhike.fellow_traveler_num -= 1
+        join_request.delete()
+        data = self.get_serializer(JoinRequest.objects.filter(hichhike__creator=self.request.user), many=True).data
+        return Response(data)
+
+
+class PassengerJoinRequestsViewSet(generics.ListAPIView, generics.CreateAPIView):
+    serializer_class = JoinRequestsSerializer
+
+    def get_queryset(self):
+        return JoinRequest.objects.filter(passenger=self.request.user)
+
+    def perform_create(self, serializer):
+        return serializer.save(passenger=self.request.user, hichhike_id=self.request.data['id'])
 
 
