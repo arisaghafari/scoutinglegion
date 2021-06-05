@@ -52,7 +52,8 @@ class Participants(models.Model):
         unique_together = ('hichhike', 'passenger',)
 
     def __str__(self):
-        return self.hichhike.destination + ' : ' + self.passenger.firstname
+        return self.hichhike.destination + ' |driver: ' + self.hichhike.creator.email + ' |passenger: ' \
+               + self.passenger.email
 
 
 class JoinRequest(models.Model):
@@ -64,4 +65,5 @@ class JoinRequest(models.Model):
         unique_together = ('hichhike', 'passenger',)
 
     def __str__(self):
-        return self.hichhike.destination + ' : ' + self.passenger.firstname
+        return self.hichhike.destination + ' |driver: ' + self.hichhike.creator.email+ ' |passenger: ' \
+               + self.passenger.email

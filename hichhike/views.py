@@ -6,6 +6,7 @@ from rest_framework import status, permissions
 from .models import *
 from .serializers import *
 from rest_framework import generics
+from Locations.views import BaseManageView
 from itertools import chain
 
 
@@ -26,6 +27,56 @@ class HichhikeList(generics.ListAPIView):
                 }
                 )
         return Response(sr_trip.data)
+
+
+class HichhikeUpdateDelete(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    serializer_class = HichhikeSerializer
+
+    def get_object(self):
+        if Hichhike.objects.filter(id=self.request.data['id']).count() != 0 \
+                and Hichhike.objects.filter(id=self.request.data['id']).first().creator == self.request.user:
+
+            return Hichhike.objects.get(pk=self.request.data['id'])
+        else:
+            return Response('can not find this location', status=status.HTTP_404_NOT_FOUND)
+
+
+    def destroy(self, request, *args, **kwargs):
+        if Hichhike.objects.filter(id=request.query_params['hichhike_id']).count() != 0:
+            instance = Hichhike.objects.get(id=request.query_params['hichhike_id'])
+            if instance.creator == self.request.user:
+                self.perform_destroy(instance)
+                return Response('hichhike deleted', status=status.HTTP_200_OK)
+            else:
+                return Response("you don't have permission")
+        else:
+            return Response('can not find this hichhike', status=status.HTTP_404_NOT_FOUND)
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        if type(instance) != Response:
+            serializer = self.get_serializer(instance, data=request.data, partial=partial)
+            serializer.is_valid(raise_exception=True)
+            self.perform_update(serializer)
+
+            if getattr(instance, '_prefetched_objects_cache', None):
+                # If 'prefetch_related' has been applied to a queryset, we need to
+                # forcibly invalidate the prefetch cache on the instance.
+                instance._prefetched_objects_cache = {}
+
+            return Response(serializer.data)
+        return Response('can not find this hichhike for you', status=status.HTTP_404_NOT_FOUND)
+
+
+class HichhikeManageView(BaseManageView):
+    VIEWS_BY_METHOD = {
+        'DELETE': HichhikeUpdateDelete.as_view,
+        'GET': HichhikeList.as_view,
+        'PUT': HichhikeUpdateDelete.as_view
+    }
+
 
 
 class CreateHichhike(generics.CreateAPIView):
