@@ -21,7 +21,7 @@ class Hichhike(models.Model):
     fellow_traveler_num = models.IntegerField()
     description = models.TextField(blank=True)
     cities = ArrayField(models.CharField(max_length=200), blank=True)
-    created = models.DateTimeField(auto_now_add=True)
+    created = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     trip_time = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):

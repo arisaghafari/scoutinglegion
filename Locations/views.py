@@ -13,6 +13,8 @@ import json
 from rest_framework import generics
 from geopy.geocoders import Nominatim
 from urllib.parse import quote
+from .permissions import IsLocationCreator
+from rest_framework.views import APIView
 
 
 class CreateLocationViewSet(generics.CreateAPIView):
@@ -42,6 +44,67 @@ class ViewLocationViewSet(generics.ListAPIView):
         # serializer = self.get_serializer(queryset, many=True)
         # print(get_city_state(lat=35.7243253,lon=51.4083653))
         return Response(serializer.data)
+
+
+class LocationUpdateDelete(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsLocationCreator,)
+    serializer_class = LocationSerializers
+
+    def get_object(self):
+        if Location.objects.filter(id=self.request.data['id']).count() != 0 \
+                and Location.objects.filter(id=self.request.data['id']).first().creator == self.request.user:
+
+            return Location.objects.get(pk=self.request.data['id'])
+        else:
+            return Response('can not find this location', status=status.HTTP_404_NOT_FOUND)
+
+
+    def destroy(self, request, *args, **kwargs):
+        if Location.objects.filter(id=request.query_params['location_id']).count() != 0:
+            instance = Location.objects.get(id=request.query_params['location_id'])
+            if instance.creator == self.request.user:
+                self.perform_destroy(instance)
+                return Response('Location deleted', status=status.HTTP_200_OK)
+            else:
+                return Response("you don't have permission")
+        else:
+            return Response('can not find this location', status=status.HTTP_404_NOT_FOUND)
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        if type(instance) != Response:
+            serializer = self.get_serializer(instance, data=request.data, partial=partial)
+            serializer.is_valid(raise_exception=True)
+            self.perform_update(serializer)
+
+            if getattr(instance, '_prefetched_objects_cache', None):
+                # If 'prefetch_related' has been applied to a queryset, we need to
+                # forcibly invalidate the prefetch cache on the instance.
+                instance._prefetched_objects_cache = {}
+
+            return Response(serializer.data)
+        return Response('can not find this location for you', status=status.HTTP_404_NOT_FOUND)
+
+
+class BaseManageView(APIView):
+
+    def dispatch(self, request, *args, **kwargs):
+        if not hasattr(self, 'VIEWS_BY_METHOD'):
+            raise Exception('VIEWS_BY_METHOD static dictionary variable must be defined on a ManageView class!')
+        if request.method in self.VIEWS_BY_METHOD:
+            return self.VIEWS_BY_METHOD[request.method]()(request, *args, **kwargs)
+
+        return Response(status=405)
+
+
+class LocationManageView(BaseManageView):
+    VIEWS_BY_METHOD = {
+        'DELETE': LocationUpdateDelete.as_view,
+        'GET': ViewLocationViewSet.as_view,
+        'PUT': LocationUpdateDelete.as_view
+    }
+
 
 
 class AllLocations(generics.ListAPIView):

@@ -11,7 +11,7 @@ class HichhikeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Hichhike
-
         fields = ['id', 'creator_id', 'creator_firstname', 'creator_lastname', 'creator_profile_picture',
                   'creator_username', 'creator_type', 'creator_gender', 'creator_age', 'source', 'destination',
                   'fellow_traveler_num', 'description', 'cities', 'jcreated', 'trip_time']
+        optional_fields = ['cities', ]
