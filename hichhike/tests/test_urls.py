@@ -1,7 +1,7 @@
 from django.test import SimpleTestCase
 from django.urls import resolve, reverse
 import Locations
-from hichhike.views import CreateHichhike, HichhikeList
+from hichhike.views import CreateHichhike, HichhikeManageView
 
 
 class TestUrls(SimpleTestCase):
@@ -11,4 +11,4 @@ class TestUrls(SimpleTestCase):
 
     def test_view_hichhike(self):
         url = reverse('creator_hichhikes')
-        self.assertEqual(resolve(url).func.view_class, HichhikeList)
+        self.assertEqual(resolve(url).func.view_class, HichhikeManageView)

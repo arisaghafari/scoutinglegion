@@ -152,6 +152,7 @@ class DriverJoinRequestsViewSet(generics.ListAPIView, generics.CreateAPIView):
             passenger = join_request.passenger
             Participants.objects.create(hichhike=join_request.hichhike, passenger=join_request.passenger)
             join_request.hichhike.fellow_traveler_num -= 1
+            join_request.hichhike.save()
         join_request.delete()
         data = self.get_serializer(JoinRequest.objects.filter(hichhike__creator=self.request.user), many=True).data
         return Response(data)
