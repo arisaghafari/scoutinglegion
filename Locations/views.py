@@ -13,7 +13,6 @@ import json
 from rest_framework import generics
 from geopy.geocoders import Nominatim
 from urllib.parse import quote
-from .permissions import IsLocationCreator, IsOwnerOrReadOnly
 from rest_framework.views import APIView
 from django.contrib.postgres.search import TrigramSimilarity
 
@@ -48,7 +47,7 @@ class ViewLocationViewSet(generics.ListAPIView):
 
 
 class LocationUpdateDelete(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsLocationCreator,)
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     serializer_class = LocationSerializers
 
     def get_object(self):
