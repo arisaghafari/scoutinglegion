@@ -14,6 +14,7 @@ from rest_framework import generics
 from geopy.geocoders import Nominatim
 from urllib.parse import quote
 from rest_framework.views import APIView
+from .permissions import IsOwnerOrReadOnly
 from django.contrib.postgres.search import TrigramSimilarity
 
 
