@@ -13,8 +13,9 @@ import json
 from rest_framework import generics
 from geopy.geocoders import Nominatim
 from urllib.parse import quote
-from .permissions import IsLocationCreator
+from .permissions import IsLocationCreator, IsOwnerOrReadOnly
 from rest_framework.views import APIView
+from django.contrib.postgres.search import TrigramSimilarity
 
 
 class CreateLocationViewSet(generics.CreateAPIView):
