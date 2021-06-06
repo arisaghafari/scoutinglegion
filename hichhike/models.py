@@ -21,7 +21,7 @@ class Hichhike(models.Model):
     fellow_traveler_num = models.IntegerField()
     description = models.TextField(blank=True)
     cities = ArrayField(models.CharField(max_length=200), blank=True)
-    created = models.DateTimeField(auto_now_add=True)
+    created = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     trip_time = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
@@ -41,3 +41,29 @@ class Hichhike(models.Model):
             else:
                 list += ' ,' + str(c)
         return list
+
+
+class Participants(models.Model):
+    passenger = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='Participants_passenger')
+    hichhike = models.ForeignKey(Hichhike, on_delete=models.CASCADE, related_name="Participants_hichhike")
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+
+    class Meta:
+        unique_together = ('hichhike', 'passenger',)
+
+    def __str__(self):
+        return self.hichhike.destination + ' |driver: ' + self.hichhike.creator.email + ' |passenger: ' \
+               + self.passenger.email
+
+
+class JoinRequest(models.Model):
+    passenger = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="JoinRequest_passenger", blank=False, null=False)
+    hichhike = models.ForeignKey(Hichhike, on_delete=models.CASCADE, related_name="JoinRequest_hichhike", blank=False, null=False)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+
+    class Meta:
+        unique_together = ('hichhike', 'passenger',)
+
+    def __str__(self):
+        return self.hichhike.destination + ' |driver: ' + self.hichhike.creator.email+ ' |passenger: ' \
+               + self.passenger.email

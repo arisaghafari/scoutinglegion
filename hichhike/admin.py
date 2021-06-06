@@ -8,3 +8,5 @@ from .models import *
 #
 # admin.site.register(Hichhike, HichhikeAdmin)
 admin.site.register(Hichhike)
+admin.site.register(Participants)
+admin.site.register(JoinRequest)
