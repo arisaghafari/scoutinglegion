@@ -32,7 +32,7 @@ class Location(models.Model):
 
 class Comment(models.Model):
     creator = models.ForeignKey(CustomUser, related_name="creator_comment", on_delete=models.CASCADE, default=None)
-    location = models.ForeignKey(Location,on_delete=models.CASCADE,related_name='comments')
+    location = models.ForeignKey(Location, on_delete=models.CASCADE,related_name='comments')
     body = models.TextField()
     created_on = models.DateTimeField(auto_now_add=True)
     active = models.BooleanField(default=False)
@@ -45,13 +45,10 @@ class Comment(models.Model):
 
 class Rating(models.Model):
     class Meta:
-        verbose_name = 'Rating'
-        verbose_name_plural = 'Ratings'
-        unique_together = [
-            'user',
-            'location']
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, default=None, related_name="user")
-    location = models.ForeignKey(Location,on_delete=models.CASCADE, related_name="location")
+        unique_together = ['user_rate', 'location']
+
+    user_rate = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="user_rate")
+    location = models.ForeignKey(Location, on_delete=models.CASCADE, related_name="location")
     rating = models.PositiveIntegerField(null=False, blank=False)
 
     def __str__(self):

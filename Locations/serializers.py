@@ -1,7 +1,5 @@
-from django.db.models import fields, Count, Q
+from django.db.models import fields, Count, Q, Avg
 from rest_framework import serializers
-from collections import Counter
-
 from .models import *
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -37,17 +35,10 @@ class GetLocationSerializers(serializers.ModelSerializer):
             data['point'] = {'lon': data['longitude'], 'lat': data['latitude']}
             data['kinds'] = ",".join(data['kinds'])
         return data
+
     def get_ratings_detail(self, obj):
-        ratings = Rating.objects.filter(
-            location=obj)
-        r_details = ratings.aggregate(
-            rating1=Count('location', filter=Q(rating__iexact=1)),
-            rating2=Count('location', filter=Q(rating__iexact=2)),
-            rating3=Count('location', filter=Q(rating__iexact=3)),
-            rating4=Count('location', filter=Q(rating__iexact=4)),
-            rating5=Count('location', filter=Q(rating__iexact=5)),
-        )
-        return r_details
+        ratings = Rating.objects.filter(location=obj).aggregate(Avg('rating'))
+        return ratings
 
 class LocationSerializers(serializers.ModelSerializer):
     class Meta:
@@ -63,5 +54,4 @@ class CommentSerializers(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = ['id', 'creator_profile_picture', 'creator_username', 'location', 'body', 'created_on', 'active']
-
 

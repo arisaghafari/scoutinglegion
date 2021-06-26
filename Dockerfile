@@ -1,4 +1,3 @@
-# pull official base image
 FROM python:3.8.3-alpine
 
 # set environment variables
@@ -31,7 +30,6 @@ RUN apk add cairo-dev \
 
 RUN pip install --upgrade pip
 RUN /usr/local/bin/python -m pip install --upgrade pip
-# RUN apk add postgresql-contrib
 RUN pip install cryptography
 RUN apk add postgresql-dev
 
@@ -66,5 +64,3 @@ COPY index.html /usr/local/lib/python3.8/site-packages/rest_framework_swagger/te
 
 WORKDIR /scoutinglegion
 EXPOSE 8000
-
-#CMD ["gunicorn", "ScoutingLegion.wsgi", ":8000"]
