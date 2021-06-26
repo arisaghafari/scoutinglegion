@@ -19,6 +19,7 @@ from urllib.parse import quote
 from .permissions import IsOwnerOrReadOnly
 from rest_framework.views import APIView
 from django.contrib.postgres.search import TrigramSimilarity
+from django.db.models import Avg
 
 
 class CreateLocationViewSet(generics.CreateAPIView):
@@ -212,16 +213,30 @@ class AllLocations(generics.ListAPIView):
                     pass
 
             return locationList
+# def get_rate_value(obj):
+#     ratings = Rating.objects.filter(location=obj).aggregate(Avg('rating'))
+#     # Book.objects.all().aggregate(Avg('price'))
+#     # return ratings
+#     # r_details = ratings.aggregate(
+#         # rating1=Count(obj, filter=Q()),
+#     #     rating2=Count(obj, filter=Q(rating__iexact=2)),
+#     #     rating3=Count(obj, filter=Q(rating__iexact=3)),
+#     #     rating4=Count(obj, filter=Q(rating__iexact=4)),
+#     #     rating5=Count(obj, filter=Q(rating__iexact=5)),
+#     # )
+#     return ratings
+
 
 class GetLocationDetails(generics.ListAPIView):
     serializer_class = GetLocationSerializers
     permission_classes = (permissions.AllowAny,)
     def get(self, request, **kwargs):
-        id = kwargs['id']
         if 'own-' in kwargs['id']:
             id = kwargs['id'][4:]
             if Location.objects.filter(id=int(id)).exists():
                 location = Location.objects.get(id=int(id))
+                # return Response(f'{get_rate_value(location)}')
+
                 l = self.get_serializer(location)
                 return Response(l.data, status.HTTP_200_OK)
         else:

@@ -8,15 +8,12 @@ class LocationAdmin(admin.ModelAdmin):
     def kinds_to_str(self, obj):
         return " ,".join([Category.title for Category in obj.kinds.all()])
 
-
 admin.site.register(Location, LocationAdmin)
-
 
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ("title", "slug")
     search_fields = ("title", "slug")
     prepopulated_fields = {"slug" : ("title",)}
-
 
 admin.site.register(Category, CategoryAdmin)
 
@@ -29,3 +26,9 @@ class CommentAdmin(admin.ModelAdmin):
 
     def approve_comments(self, request, queryset):
         queryset.update(active=True)
+
+class RateAdmin(admin.ModelAdmin):
+    list_display = ("user_rate", "location")
+    search_fields = ("user_rate", "location")
+
+admin.site.register(Rating, RateAdmin)
