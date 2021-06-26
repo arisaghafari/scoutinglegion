@@ -13,5 +13,5 @@ urlpatterns = [
     path('getCategory/', get_all_categories),
     path('comments/', CommentList.as_view()),
     path('comments/<int:pk>/', CommentDetail.as_view()),
-    # url(r'^ratings/', include('star_ratings.urls', namespace='ratings', app_name='ratings')),
+    # re_path(r'^ratings/', include('star_ratings.urls', namespace='ratings')),
 ]
