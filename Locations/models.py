@@ -42,3 +42,17 @@ class Comment(models.Model):
 
     def __str__(self):
         return 'Comment {} by {}'.format(self.body, self.creator.username)
+
+class Rating(models.Model):
+    class Meta:
+        verbose_name = 'Rating'
+        verbose_name_plural = 'Ratings'
+        unique_together = [
+            'user',
+            'location']
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, default=None, related_name="user")
+    location = models.ForeignKey(Location,on_delete=models.CASCADE, related_name="location")
+    rating = models.PositiveIntegerField(null=False, blank=False)
+
+    def __str__(self):
+        return 'Rating(Item ='+ str(self.location)+', Stars ='+ str(self.rating)+')'

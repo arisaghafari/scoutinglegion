@@ -1,7 +1,6 @@
-from django.db.models import fields
+from django.db.models import fields, Count, Q
 from rest_framework import serializers
-from users.serializers import UserDetailSerializers
-from rest_framework.validators import UniqueValidator
+from collections import Counter
 
 from .models import *
 
@@ -13,6 +12,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class GetLocationSerializers(serializers.ModelSerializer):
+    ratings = serializers.SerializerMethodField('get_ratings_detail')
     id = serializers.IntegerField(read_only=True)
     creator_id = serializers.IntegerField(source='creator.pk', required=False)
     creator_firstname = serializers.CharField(source='creator.firstname', required=False)
@@ -26,7 +26,7 @@ class GetLocationSerializers(serializers.ModelSerializer):
 
         fields = ['id', 'name', 'creator_id', 'creator_firstname', 'creator_lastname', 'creator_username',
                   'creator_profile_picture', 'is_private',
-                  'latitude', 'longitude', 'kinds', 'city', 'state', 'image', 'description', 'address']
+                  'latitude', 'longitude', 'kinds', 'city', 'state', 'image', 'description', 'address', 'ratings']
 
     def to_representation(self, instance):
         data = super(GetLocationSerializers, self).to_representation(instance)
@@ -37,8 +37,17 @@ class GetLocationSerializers(serializers.ModelSerializer):
             data['point'] = {'lon': data['longitude'], 'lat': data['latitude']}
             data['kinds'] = ",".join(data['kinds'])
         return data
-
-
+    def get_ratings_detail(self, obj):
+        ratings = Rating.objects.filter(
+            location=obj)
+        r_details = ratings.aggregate(
+            rating1=Count('location', filter=Q(rating__iexact=1)),
+            rating2=Count('location', filter=Q(rating__iexact=2)),
+            rating3=Count('location', filter=Q(rating__iexact=3)),
+            rating4=Count('location', filter=Q(rating__iexact=4)),
+            rating5=Count('location', filter=Q(rating__iexact=5)),
+        )
+        return r_details
 
 class LocationSerializers(serializers.ModelSerializer):
     class Meta:
