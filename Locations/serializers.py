@@ -10,7 +10,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class GetLocationSerializers(serializers.ModelSerializer):
-    ratings = serializers.SerializerMethodField('get_ratings_detail')
+    # ratings = serializers.SerializerMethodField('get_ratings_detail')
     id = serializers.IntegerField(read_only=True)
     creator_id = serializers.IntegerField(source='creator.pk', required=False)
     creator_firstname = serializers.CharField(source='creator.firstname', required=False)
@@ -24,7 +24,7 @@ class GetLocationSerializers(serializers.ModelSerializer):
 
         fields = ['id', 'name', 'creator_id', 'creator_firstname', 'creator_lastname', 'creator_username',
                   'creator_profile_picture', 'is_private',
-                  'latitude', 'longitude', 'kinds', 'city', 'state', 'image', 'description', 'address', 'ratings']
+                  'latitude', 'longitude', 'kinds', 'city', 'state', 'image', 'description', 'address']
 
     def to_representation(self, instance):
         data = super(GetLocationSerializers, self).to_representation(instance)
@@ -36,9 +36,9 @@ class GetLocationSerializers(serializers.ModelSerializer):
             data['kinds'] = ",".join(data['kinds'])
         return data
 
-    def get_ratings_detail(self, obj):
-        ratings = Rating.objects.filter(location=obj).aggregate(Avg('rating'))
-        return ratings
+    # def get_ratings_detail(self, obj):
+    #     ratings = Rating.objects.filter(location=obj).aggregate(Avg('rating'))
+    #     return ratings
 
 class LocationSerializers(serializers.ModelSerializer):
     class Meta:
