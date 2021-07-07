@@ -18,8 +18,6 @@ from geopy.geocoders import Nominatim
 from urllib.parse import quote
 from .permissions import IsOwnerOrReadOnly
 from rest_framework.views import APIView
-from django.contrib.postgres.search import TrigramSimilarity
-from django.db.models import Avg
 
 
 class CreateLocationViewSet(generics.CreateAPIView):
@@ -29,6 +27,12 @@ class CreateLocationViewSet(generics.CreateAPIView):
     def perform_create(self, serializer):
         return serializer.save(creator=self.request.user)
 
+class Valued_Rate(generics.CreateAPIView):
+    queryset = Location.objects.all()
+    serializer_class = RateSerializers
+
+    def perform_create(self, serializer):
+        return serializer.save()
 
 class ViewLocationViewSet(generics.ListAPIView):
     queryset = Location.objects.all()
@@ -109,8 +113,6 @@ class LocationManageView(BaseManageView):
         'GET': ViewLocationViewSet.as_view,
         'PUT': LocationUpdateDelete.as_view
     }
-
-
 
 class AllLocations(generics.ListAPIView):
     serializer_class = GetLocationSerializers
@@ -213,18 +215,10 @@ class AllLocations(generics.ListAPIView):
                     pass
 
             return locationList
-# def get_rate_value(obj):
-#     ratings = Rating.objects.filter(location=obj).aggregate(Avg('rating'))
-#     # Book.objects.all().aggregate(Avg('price'))
-#     # return ratings
-#     # r_details = ratings.aggregate(
-#         # rating1=Count(obj, filter=Q()),
-#     #     rating2=Count(obj, filter=Q(rating__iexact=2)),
-#     #     rating3=Count(obj, filter=Q(rating__iexact=3)),
-#     #     rating4=Count(obj, filter=Q(rating__iexact=4)),
-#     #     rating5=Count(obj, filter=Q(rating__iexact=5)),
-#     # )
-#     return ratings
+
+def get_rate_value(obj):
+
+    return
 
 
 class GetLocationDetails(generics.ListAPIView):
