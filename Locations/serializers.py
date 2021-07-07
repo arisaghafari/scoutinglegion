@@ -40,6 +40,11 @@ class GetLocationSerializers(serializers.ModelSerializer):
         ratings = Rating.objects.filter(location=obj).aggregate(Avg('rating'))
         return ratings
 
+class RateSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = Rating
+        fields = '__all__'
+
 class LocationSerializers(serializers.ModelSerializer):
     class Meta:
         model = Location
