@@ -43,7 +43,7 @@ class GetLocationSerializers(serializers.ModelSerializer):
 class RateSerializers(serializers.ModelSerializer):
     class Meta:
         model = Rating
-        fields = '__all__'
+        fields = ['location', 'rating']
 
 class LocationSerializers(serializers.ModelSerializer):
     class Meta:
