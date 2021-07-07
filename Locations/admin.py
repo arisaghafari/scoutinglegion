@@ -26,9 +26,9 @@ class CommentAdmin(admin.ModelAdmin):
 
     def approve_comments(self, request, queryset):
         queryset.update(active=True)
-#
-# class RateAdmin(admin.ModelAdmin):
-#     list_display = ("user_rate", "location")
-#     search_fields = ("user_rate", "location")
-#
-# admin.site.register(Rating, RateAdmin)
+
+class RateAdmin(admin.ModelAdmin):
+    list_display = ("user_rate", "location")
+    search_fields = ("user_rate", "location")
+
+admin.site.register(Rating, RateAdmin)
