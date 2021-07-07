@@ -32,7 +32,7 @@ class Valued_Rate(generics.CreateAPIView):
     serializer_class = RateSerializers
 
     def perform_create(self, serializer):
-        return serializer.save()
+        return serializer.save(user_rate=self.request.user)
 
 class ViewLocationViewSet(generics.ListAPIView):
     queryset = Location.objects.all()
