@@ -39,6 +39,7 @@ class GetLocationSerializers(serializers.ModelSerializer):
             for item in data['kinds']:
                 cat.append(list(item.values())[1])
             data['kinds'] = ",".join(cat)
+            data['all_kinds'] = data['kinds']
         return data
 
     def get_ratings_detail(self, obj):
