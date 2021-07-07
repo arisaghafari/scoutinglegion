@@ -34,12 +34,12 @@ class GetLocationSerializers(serializers.ModelSerializer):
             data['xid'] = 'own_'+str(data['id'])
             data['image'] = [data['image']]
             data['point'] = {'lon': data['longitude'], 'lat': data['latitude']}
-            print(list(data['kinds'][1].values())[1])
+            data['all_kinds'] = data['kinds']
             cat = []
             for item in data['kinds']:
                 cat.append(list(item.values())[1])
             data['kinds'] = ",".join(cat)
-            data['all_kinds'] = data['kinds']
+
         return data
 
     def get_ratings_detail(self, obj):
