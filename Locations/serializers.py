@@ -17,7 +17,7 @@ class GetLocationSerializers(serializers.ModelSerializer):
     creator_lastname = serializers.CharField(source='creator.lastname', required=False)
     creator_profile_picture = serializers.ImageField(source='creator.profile_picture', required=False)
     creator_username = serializers.CharField(source='creator.username', required=False)
-    kinds = serializers.StringRelatedField(many=True)
+    kinds = CategorySerializer(many=True)
 
     class Meta:
         model = Location
