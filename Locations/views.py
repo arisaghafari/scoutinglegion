@@ -1,7 +1,3 @@
-from django.contrib.postgres import search
-from django.db.models.query import QuerySet
-from django.db.models import Q
-from django.shortcuts import render, get_object_or_404
 from rest_framework import generics, permissions, status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -119,13 +115,11 @@ class AllLocations(generics.ListAPIView):
     permission_classes = (permissions.AllowAny,)
 
     def get(self, request, *args, **kwargs):
-        # return Response({'hi'})
         if self.OwnData(request) == []:
             complete_data = self.OpenTripMapData(request)
         else:
             complete_data = self.OwnData(request) + self.OpenTripMapData(request)
         return Response(complete_data, status.HTTP_200_OK)
-        #return Response(self.OwnData(request), status.HTTP_200_OK)
 
     def is_inside(self, center_loc, loc, radius=0.05):
         point_1 = geometry.Point(center_loc[0], center_loc[1])
