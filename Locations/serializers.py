@@ -33,7 +33,10 @@ class GetLocationSerializers(serializers.ModelSerializer):
             data['xid'] = 'own_'+ str(data['id'])
             data['image'] = [data['image']]
             data['point'] = {'lon': data['longitude'], 'lat': data['latitude']}
-            data['kinds'] = ",".join(data['kinds'])
+            if data['kinds'] is not None :
+                data['kinds'] = ",".join(data['kinds'])
+            else:
+                data['kinds'] = ""
         return data
 
     def get_ratings_detail(self, obj):
