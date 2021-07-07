@@ -18,25 +18,27 @@ class GetLocationSerializers(serializers.ModelSerializer):
     creator_profile_picture = serializers.ImageField(source='creator.profile_picture', required=False)
     creator_username = serializers.CharField(source='creator.username', required=False)
     kinds = CategorySerializer(many=True)
+    # kinds = serializers.StringRelatedField(many=True)
 
     class Meta:
         model = Location
 
         fields = ['id', 'name', 'creator_id', 'creator_firstname', 'creator_lastname', 'creator_username',
                   'creator_profile_picture', 'is_private',
-                  'latitude', 'longitude', 'kinds', 'city', 'state', 'image', 'description', 'address', 'ratings']
+                  'latitude', 'longitude', 'kinds', 'city', 'state', 'image', 'description', 'address', 'ratings',]
 
     def to_representation(self, instance):
         data = super(GetLocationSerializers, self).to_representation(instance)
         request = self.context.get('request', None)
         if request.method == 'GET':
-            data['xid'] = 'own_'+ str(data['id'])
+            data['xid'] = 'own_'+str(data['id'])
             data['image'] = [data['image']]
             data['point'] = {'lon': data['longitude'], 'lat': data['latitude']}
-            if data['kinds'] is not None :
-                data['kinds'] = ",".join(data['kinds'])
-            else:
-                data['kinds'] = ""
+            print(list(data['kinds'][1].values())[1])
+            cat = []
+            for item in data['kinds']:
+                cat.append(list(item.values())[1])
+            data['kinds'] = ",".join(cat)
         return data
 
     def get_ratings_detail(self, obj):

@@ -22,13 +22,14 @@ class TestView(TestCase):
         self.assertEqual(self.user.creator_location.count(), 0)
         self.assertEqual(response.content, b'[]')
         Category.objects.create(title='s', slug='s')
+        Category.objects.create(title='a', slug='a')
         data = {
             "name": "string",
             "is_private": True,
             "latitude": 0,
             "longitude": 0.2,
             "kinds": [
-                1
+                1, 2
             ],
             "city": "string",
             "state": "string",
