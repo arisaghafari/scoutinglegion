@@ -47,8 +47,8 @@ class Rating(models.Model):
     class Meta:
         unique_together = ['user_rate', 'location']
 
-    user_rate = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="user_rate")
-    location = models.ForeignKey(Location, on_delete=models.CASCADE, related_name="location")
+    user_rate = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='Urate')
+    location = models.ForeignKey(Location, on_delete=models.CASCADE, related_name='Lrate')
     rating = models.PositiveIntegerField(null=False, blank=False)
 
     def __str__(self):
