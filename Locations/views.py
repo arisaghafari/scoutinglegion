@@ -28,7 +28,7 @@ class CreateLocationViewSet(generics.CreateAPIView):
         return serializer.save(creator=self.request.user)
 
 class Valued_Rate(generics.CreateAPIView):
-    queryset = Location.objects.all()
+    queryset = Rating.objects.all()
     serializer_class = RateSerializers
 
     def perform_create(self, serializer):
