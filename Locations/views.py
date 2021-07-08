@@ -23,12 +23,25 @@ class CreateLocationViewSet(generics.CreateAPIView):
     def perform_create(self, serializer):
         return serializer.save(creator=self.request.user)
 
-class Valued_Rate(generics.CreateAPIView):
-    queryset = Rating.objects.all()
-    serializer_class = RateSerializers
+@api_view(['POST'])
+def Valued_Rate(request):
+    rate_obj = Rating.objects.filter(user_rate=request.user, location=request.data['location'])
+    if rate_obj:
+        rate_obj.rating = request.data['rating']
+        rate_obj.update(rating=request.data['rating'])
+        rate_obj_sr = RateSerializers(rate_obj, many=True)
+        return Response(rate_obj_sr.data)
+    else:
+        location = Location.objects.get(id=request.data['location'])
+        obj = {
+            "user_rate": request.user,
+            "location": location,
+            "rating": request.data['rating']
+        }
+        c_obj = Rating.objects.create(** obj)
+        sr_obj = RateSerializers(c_obj)
+        return Response(sr_obj.data)
 
-    def perform_create(self, serializer):
-        return serializer.save(user_rate=self.request.user)
 
 class ViewLocationViewSet(generics.ListAPIView):
     queryset = Location.objects.all()
@@ -210,11 +223,6 @@ class AllLocations(generics.ListAPIView):
 
             return locationList
 
-def get_rate_value(obj):
-
-    return
-
-
 class GetLocationDetails(generics.ListAPIView):
     serializer_class = GetLocationSerializers
     permission_classes = (permissions.AllowAny,)
@@ -223,7 +231,6 @@ class GetLocationDetails(generics.ListAPIView):
             id = kwargs['id'][4:]
             if Location.objects.filter(id=int(id)).exists():
                 location = Location.objects.get(id=int(id))
-                # return Response(f'{get_rate_value(location)}')
 
                 l = self.get_serializer(location)
                 return Response(l.data, status.HTTP_200_OK)
