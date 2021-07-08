@@ -28,7 +28,7 @@ class CommentAdmin(admin.ModelAdmin):
         queryset.update(active=True)
 
 class RateAdmin(admin.ModelAdmin):
-    list_display = ("user_rate", "location")
+    list_display = ("user_rate", "location", "rating")
     search_fields = ("user_rate", "location")
 
 admin.site.register(Rating, RateAdmin)

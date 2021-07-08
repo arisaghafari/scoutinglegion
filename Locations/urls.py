@@ -12,5 +12,5 @@ urlpatterns = [
     path('getCategory/', get_all_categories),
     path('comments/', CommentList.as_view()),
     path('comments/<int:pk>/', CommentDetail.as_view()),
-    path('rate/', Valued_Rate.as_view()),
+    path('rate/', Valued_Rate),
 ]
