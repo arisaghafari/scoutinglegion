@@ -23,24 +23,13 @@ class CreateLocationViewSet(generics.CreateAPIView):
     def perform_create(self, serializer):
         return serializer.save(creator=self.request.user)
 
-class CreateRate(generics.CreateAPIView):
-    queryset = Rating.objects.all()
-    serializer_class = RateSerializers
-
-    def perform_create(self, serializer):
-        return serializer.save(user_rate=self.request.user)
-
 @api_view(['POST'])
 def Valued_Rate(request):
     rate_obj = Rating.objects.filter(user_rate=request.user, location=request.data['location'])
-    #return Response(rate_obj)
     if rate_obj:
+        rate_obj.rating = request.data['rating']
+        rate_obj.update(rating=request.data['rating'])
         rate_obj_sr = RateSerializers(rate_obj, many=True)
-        #return Response(rate_obj_sr.data)
-        # return Response(rate_obj_sr.data[0]['rating'])
-        rate_obj_sr.data[0]['rating'] = request.data['rating']
-        # return Response(rate_obj_sr.data[0]['rating'])
-        # Rating.objects.update(rate_obj_sr.data)
         return Response(rate_obj_sr.data)
     else:
         location = Location.objects.get(id=request.data['location'])
