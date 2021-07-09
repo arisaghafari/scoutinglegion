@@ -13,7 +13,8 @@ class HichhikeSerializer(serializers.ModelSerializer):
         model = Hichhike
         fields = ['id', 'creator_id', 'creator_firstname', 'creator_lastname', 'creator_profile_picture',
                   'creator_username', 'creator_type', 'creator_gender', 'creator_age', 'source', 'destination',
-                  'fellow_traveler_num', 'description', 'cities', 'jcreated', 'trip_time']
+                  'fellow_traveler_num', 'description', 'cities', 'created', 'trip_time', 'source_state',
+                  'destination_state']
         optional_fields = ['cities', ]
 
 

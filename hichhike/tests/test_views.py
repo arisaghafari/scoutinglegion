@@ -23,7 +23,9 @@ class TestView(TestCase):
             "creator_gender": 'm',
             "creator_age": 25,
             "source": "shiraz",
+            "source_state": "fars",
             "destination": "tehran",
+            "destination_state": "tehran",
             "fellow_traveler_num": 2,
             "description": "string",
             "cities": ["abadeh", "esfahan"]

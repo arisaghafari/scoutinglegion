@@ -17,7 +17,9 @@ class Hichhike(models.Model):
     creator_gender = models.CharField(max_length=1, choices=GENDER_CHOICES)
     creator_age = models.IntegerField()
     source = models.CharField(max_length=200)
+    source_state = models.CharField(max_length=200)
     destination = models.CharField(max_length=200)
+    destination_state = models.CharField(max_length=200)
     fellow_traveler_num = models.IntegerField()
     description = models.TextField(blank=True)
     cities = ArrayField(models.CharField(max_length=200), blank=True)
@@ -26,12 +28,6 @@ class Hichhike(models.Model):
 
     def __str__(self):
         return str(self.creator) + "_" + self.destination
-
-    def jcreated(self):
-        return jalali_converter(self.created)
-
-    def jtrip_time(self):
-        return jalali_converter(self.trip_time)
 
     def cities_list(self):
         list = ""
