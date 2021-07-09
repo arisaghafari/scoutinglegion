@@ -52,7 +52,8 @@ INSTALLED_APPS = [
     'users',
     'Locations',
     'hichhike.apps.HichhikeConfig',
-    'django.contrib.postgres'
+    'django.contrib.postgres',
+    'django_nose'
 ]
 #allauth.socialaccount
 MIDDLEWARE = [
@@ -202,4 +203,11 @@ STATIC_ROOT = BASE_DIR / 'static'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
+# Use nose to run all tests
+TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+# Tell nose to measure coverage on the 'foo' and 'bar' apps
+NOSE_ARGS = [
+    '--with-coverage',
+    '--cover-package=Locations,hichhike',
+]
 
