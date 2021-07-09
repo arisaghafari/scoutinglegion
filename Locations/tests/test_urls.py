@@ -22,11 +22,11 @@ class TestUrls(SimpleTestCase):
 
     def test_comments_list(self):
         url = reverse('comments')
-        self.assertEqual(resolve(url).func.view_class, CommentList)
+        self.assertEqual(resolve(url).func, Comment_List)
 
-    def test_comment_detail(self):
-        url = reverse('comments_detail', args=[1,])
-        self.assertEqual(resolve(url).func.view_class, CommentDetail)
+    # def test_comment_detail(self):
+    #     url = reverse('comments_detail', args=[1,])
+    #     self.assertEqual(resolve(url).func.view_class, CommentDetail)
 
     def test_location_detail(self):
         url = reverse('location_detail', args=[1,])
@@ -39,3 +39,7 @@ class TestUrls(SimpleTestCase):
     def test_search(self):
         url = reverse('search')
         self.assertEqual(resolve(url).func.view_class, SearchByName)
+
+    def test_comment_create(self):
+        url = reverse('comment_create')
+        self.assertEqual(resolve(url).func, Comment_Create)

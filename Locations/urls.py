@@ -11,7 +11,8 @@ urlpatterns = [
     path('get_locations/', AllLocations.as_view(), name='all_locations'),
     path('search_by_name/', SearchByName.as_view(), name='search'),
     path('getCategory/', get_all_categories, name='get_category'),
-    path('comments/', CommentList.as_view(), name='comments'),
-    path('comments/<int:pk>/', CommentDetail.as_view(), name='comments_detail'),
+    path('comments/', Comment_List, name='comments'),
+    # path('comments/<int:pk>/', CommentDetail.as_view(), name='comments_detail'),
+    path('comments/create', Comment_Create, name='comment_create'),
     path('rate/', Valued_Rate, name='rate'),
 ]
