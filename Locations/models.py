@@ -1,15 +1,18 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from users.models import CustomUser
-
+from django.utils.text import slugify
 
 class Category(models.Model):
     title = models.CharField(max_length=200)
     slug = models.SlugField(max_length=200, unique=True)
 
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.title)
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return self.title
-
 
 class Location(models.Model):
     name = models.CharField(_('name'), max_length=200, null=False, blank=True)

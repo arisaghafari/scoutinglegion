@@ -42,7 +42,7 @@ def Valued_Rate(request):
         sr_obj = RateSerializers(c_obj)
         return Response(sr_obj.data)
 
-
+################################################
 class ViewLocationViewSet(generics.ListAPIView):
     queryset = Location.objects.all()
     serializer_class = GetLocationSerializers
@@ -122,7 +122,7 @@ class LocationManageView(BaseManageView):
         'GET': ViewLocationViewSet.as_view,
         'PUT': LocationUpdateDelete.as_view
     }
-
+######################################################################
 class AllLocations(generics.ListAPIView):
     serializer_class = GetLocationSerializers
     permission_classes = (permissions.AllowAny,)
@@ -260,7 +260,7 @@ class GetLocationDetails(generics.ListAPIView):
             return None
 
 @api_view()
-def get_all_categories(request):
+def get_all_categories(request):#
     category = Category.objects.all()
     category_sr = CategorySerializer(category, many=True)
     return Response(category_sr.data)
