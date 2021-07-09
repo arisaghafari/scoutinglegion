@@ -1,6 +1,5 @@
 from django.test import SimpleTestCase
 from django.urls import resolve, reverse
-import Locations
 from Locations.views import *
 
 
