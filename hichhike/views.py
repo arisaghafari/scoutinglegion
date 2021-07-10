@@ -1,4 +1,4 @@
-from datetime import time
+import datetime
 
 from django.core.paginator import Paginator
 from rest_framework.response import Response
@@ -128,14 +128,19 @@ class SuggestHichhike(generics.ListAPIView):
         # return (query1 | query2).distinct()
 
     def get_trips(self, sources, destinations, gender):
+        hours_added = datetime.timedelta(hours=1)
+        future_date_and_time = datetime.datetime.now() + hours_added
         first = Hichhike.objects.filter(creator_type='d', creator_gender__in=gender).\
-            filter(source__in=sources, destination__in=destinations).order_by('-created')
+            filter(source__in=sources, destination__in=destinations,
+                   trip_time__gte=future_date_and_time).order_by('-created')
         print(first)
         second = Hichhike.objects.filter(creator_type='d', creator_gender__in=gender).\
-            filter(source__in=sources, cities__overlap=destinations).order_by('-created')
+            filter(source__in=sources, cities__overlap=destinations,
+                   trip_time__gte=future_date_and_time).order_by('-created')
         print(second)
         third = Hichhike.objects.filter(creator_type='d', creator_gender__in=gender).\
-            filter(cities__overlap=sources, destination__in=destinations).order_by('-created')
+            filter(cities__overlap=sources, destination__in=destinations,
+                   trip_time__gte=future_date_and_time).order_by('-created')
         print(third)
         return first | second | third
 
