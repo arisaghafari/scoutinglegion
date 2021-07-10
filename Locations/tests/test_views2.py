@@ -50,11 +50,11 @@ class TestView2(TestCase):
         response = self.client.get(reverse('search'), {'search': 'loc'})
         self.assertEqual(response.status_code, 200)
 
-    def test_location_detail_GET(self):
-        pass
-
-    def test_all_location(self):
-        pass
+    # def test_location_detail_GET(self):
+    #     pass
+    #
+    # def test_all_location(self):
+    #     pass
 
 
 
