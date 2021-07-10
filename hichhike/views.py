@@ -169,8 +169,15 @@ class PassengerJoinRequestsViewSet(generics.ListAPIView, generics.CreateAPIView)
     def get_queryset(self):
         return JoinRequest.objects.filter(passenger=self.request.user)
 
-    def perform_create(self, serializer):
-        return serializer.save(passenger=self.request.user, hichhike_id=self.request.data['id'])
+    def post(self, request, *args, **kwargs):
+        hch = Hichhike.objects.get(id=self.request.data['id'])
+        if hch.fellow_traveler_num > 0:
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save(passenger=self.request.user, hichhike_id=self.request.data['id'])
+            return Response(serializer.data)
+        else:
+            return Response('Capacity is complete', status=status.HTTP_404_NOT_FOUND)
 
 
 class ParticipantsDriverViewSet(generics.ListAPIView):
