@@ -297,16 +297,29 @@ def get_city_state(lat, lon):
     address = location.raw['address']
     return location
 
-class CommentList(generics.ListCreateAPIView):
-    queryset = Comment.objects.all()
-    serializer_class = CommentSerializers
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+@api_view(['POST'])
+def Comment_Create(request):
+    location = Location.objects.get(id=request.data['location'])
+    obj = {
+        "creator": request.user,
+        "location": location,
+        "body": request.data['body']
+    }
+    c_obj = Comment.objects.create(** obj)
+    sr_obj = CommentSerializers(c_obj)
+    return Response(sr_obj.data)
 
-    def perform_create(self, serializer):
-        serializer.save(creator=self.request.user)
-
-class CommentDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Comment.objects.all()
-    serializer_class = CommentSerializers
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly,
-                          IsOwnerOrReadOnly]
+@api_view(['GET'])
+def Comment_List(request):
+    # location = request.query_params['location']
+    location = Location.objects.get(id=request.query_params['location'])
+    # return Response({'hi'})
+    comment = Comment.objects.filter(location=location)
+    sr_comment = CommentSerializers(comment, many=True)
+    return Response(sr_comment.data)
+#
+# class CommentDetail(generics.RetrieveUpdateDestroyAPIView):
+#     queryset = Comment.objects.all()
+#     serializer_class = CommentSerializers
+#     permission_classes = [permissions.IsAuthenticatedOrReadOnly,
+#                           IsOwnerOrReadOnly]
