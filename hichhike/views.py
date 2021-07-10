@@ -130,15 +130,15 @@ class SuggestHichhike(generics.ListAPIView):
     def get_trips(self, sources, destinations, gender):
         hours_added = datetime.timedelta(hours=1)
         future_date_and_time = datetime.datetime.now() + hours_added
-        first = Hichhike.objects.filter(creator_type='d', creator_gender__in=gender).\
+        first = Hichhike.objects.filter(creator_type='d').\
             filter(source__in=sources, destination__in=destinations,
                    trip_time__gte=future_date_and_time).order_by('-created')
         print(first)
-        second = Hichhike.objects.filter(creator_type='d', creator_gender__in=gender).\
+        second = Hichhike.objects.filter(creator_type='d').\
             filter(source__in=sources, cities__overlap=destinations,
                    trip_time__gte=future_date_and_time).order_by('-created')
         print(second)
-        third = Hichhike.objects.filter(creator_type='d', creator_gender__in=gender).\
+        third = Hichhike.objects.filter(creator_type='d').\
             filter(cities__overlap=sources, destination__in=destinations,
                    trip_time__gte=future_date_and_time).order_by('-created')
         print(third)
