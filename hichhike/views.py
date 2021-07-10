@@ -177,14 +177,14 @@ class ParticipantsDriverViewSet(generics.ListAPIView):
     serializer_class = ParticipantsDriverSerializer
 
     def get_queryset(self):
-        return Participants.objects.filter(hichhike__creator=self.request.user)
+        return Participants.objects.filter(hichhike__creator=self.request.user).order_by('-created_at')
 
 
 class ParticipantsPassengerViewSet(generics.ListAPIView):
     serializer_class = ParticipantsPassengerSerializer
 
     def get_queryset(self):
-        return Participants.objects.filter(passenger=self.request.user)
+        return Participants.objects.filter(passenger=self.request.user).order_by('-created_at')
 
 
 
