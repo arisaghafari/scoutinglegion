@@ -149,7 +149,7 @@ class DriverJoinRequestsViewSet(generics.ListAPIView, generics.CreateAPIView):
     serializer_class = JoinRequestsSerializer
 
     def get_queryset(self):
-        return JoinRequest.objects.filter(hichhike__creator=self.request.user)
+        return JoinRequest.objects.filter(hichhike__creator=self.request.user).order_by('-created_at')
 
     def post(self, request, *args, **kwargs):
         join_request = JoinRequest.objects.get(pk=self.request.data['id'])
@@ -167,7 +167,7 @@ class PassengerJoinRequestsViewSet(generics.ListAPIView, generics.CreateAPIView)
     serializer_class = JoinRequestsSerializer
 
     def get_queryset(self):
-        return JoinRequest.objects.filter(passenger=self.request.user)
+        return JoinRequest.objects.filter(passenger=self.request.user).order_by('-created_at')
 
     def post(self, request, *args, **kwargs):
         hch = Hichhike.objects.get(id=self.request.data['id'])
