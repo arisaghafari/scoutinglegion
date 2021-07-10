@@ -33,7 +33,7 @@ class JoinRequestsSerializer(serializers.ModelSerializer):
                   , 'passenger_username', 'passenger_profile_picture')
 
 
-class ParticipantsSerializer(serializers.ModelSerializer):
+class ParticipantsDriverSerializer(serializers.ModelSerializer):
     hichhike_id = serializers.IntegerField(source='hichhike.pk', required=False)
     passenger_id = serializers.IntegerField(source='passenger.pk', required=False)
     passenger_firstname = serializers.CharField(source='passenger.firstname', required=False)
@@ -44,3 +44,20 @@ class ParticipantsSerializer(serializers.ModelSerializer):
         model = JoinRequest
         fields = ('id', 'hichhike_id', 'passenger_id', 'passenger_firstname', 'passenger_lastname'
                   , 'passenger_username', 'passenger_profile_picture')
+
+
+class ParticipantsPassengerSerializer(serializers.ModelSerializer):
+    hichhike_id = serializers.IntegerField(source='hichhike.pk', required=False)
+    hichhike_capacity = serializers.IntegerField(source='hichhike.fellow_traveler_num', required=False)
+    hichhike_creator = serializers.IntegerField(source='hichhike.creator.pk', required=False)
+    hichhike_creator_username = serializers.CharField(source='hichhike.creator.username', required=False)
+    hichhike_creator_firstname = serializers.CharField(source='hichhike.creator.firstname', required=False)
+    hichhike_creator_lastname = serializers.CharField(source='hichhike.creator.lastname', required=False)
+    hichhike_creator_profile_picture = serializers.ImageField\
+        (source='hichhike.creator.profile_picture', required=False)
+
+    class Meta:
+        model = JoinRequest
+        fields = ('id', 'hichhike_id', 'hichhike_creator',
+                  'hichhike_capacity', 'hichhike_creator_username', 'hichhike_creator_firstname'
+                  , 'hichhike_creator_lastname', 'hichhike_creator_profile_picture')

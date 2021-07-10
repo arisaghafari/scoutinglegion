@@ -8,5 +8,6 @@ urlpatterns = [
     path('suggest_hichhike/', SuggestHichhike.as_view()),
     path('passenger_joinrequest/', PassengerJoinRequestsViewSet.as_view()),
     path('driver_joinrequest/', DriverJoinRequestsViewSet.as_view()),
-    path('Participants/', ParticipantsViewSet.as_view())
+    path('my_passengers/', ParticipantsDriverViewSet.as_view()),
+    path('my_travels/', ParticipantsPassengerViewSet.as_view())
 ]
