@@ -57,6 +57,11 @@ class ParticipantsDriverSerializer(serializers.ModelSerializer):
                   'hichhike_description', 'hichhike_trip_time'
                   , 'passenger_username', 'passenger_profile_picture')
 
+    def to_representation(self, instance):
+        data = super(ParticipantsDriverSerializer, self).to_representation(instance)
+        data['accepted'] = True
+        return data
+
 
 class ParticipantsPassengerSerializer(serializers.ModelSerializer):
     hichhike_id = serializers.IntegerField(source='hichhike.pk', required=False)
@@ -78,3 +83,5 @@ class ParticipantsPassengerSerializer(serializers.ModelSerializer):
                   'hichhike_description', 'hichhike_trip_time',
                   'hichhike_capacity', 'hichhike_creator_username', 'hichhike_creator_firstname'
                   , 'hichhike_creator_lastname', 'hichhike_creator_profile_picture')
+
+
