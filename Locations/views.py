@@ -260,7 +260,7 @@ class GetLocationDetails(generics.ListAPIView):
             return None
 
 @api_view()
-def get_all_categories(request):#
+def get_all_categories(request):
     category = Category.objects.all()
     category_sr = CategorySerializer(category, many=True)
     return Response(category_sr.data)
@@ -271,11 +271,16 @@ class SearchByName(generics.ListAPIView):
     
     def get(self, request):
         name = request.query_params['search']
-        queryset = Location.objects.filter(Q(name__icontains = name) | Q(description__icontains = name) | Q(address__icontains = name))
-        # queryset = Location.objects.annotate(similarity=TrigramSimilarity('name', name),).filter(similarity__gt=0.3)
+        queryset = Location.objects.filter(Q(name__icontains=name) | Q(description__icontains=name) | Q(address__icontains=name))
         sr_queryset = self.get_serializer(queryset, many=True)
-        openTripData = self.getOpenTripMap(quote(name))
-        allData = sr_queryset.data + openTripData
+        own_data = []
+        i = 0
+        for q in sr_queryset.data:
+            if i < 2:
+                own_data.append(q)
+            i += 1
+        openTripData = self.getOpenTripMap(quote(name))[:3]
+        allData = own_data + openTripData
         return Response(allData, status.HTTP_200_OK)
 
     def getOpenTripMap(self, name):
@@ -289,7 +294,6 @@ class SearchByName(generics.ListAPIView):
             dataList.append(d)            
         
         return dataList
-
 
 def get_city_state(lat, lon):
     geolocator = Nominatim(user_agent="geoapiExercises")
@@ -311,15 +315,7 @@ def Comment_Create(request):
 
 @api_view(['GET'])
 def Comment_List(request):
-    # location = request.query_params['location']
     location = Location.objects.get(id=request.query_params['location'])
-    # return Response({'hi'})
     comment = Comment.objects.filter(location=location)
     sr_comment = CommentSerializers(comment, many=True)
     return Response(sr_comment.data)
-#
-# class CommentDetail(generics.RetrieveUpdateDestroyAPIView):
-#     queryset = Comment.objects.all()
-#     serializer_class = CommentSerializers
-#     permission_classes = [permissions.IsAuthenticatedOrReadOnly,
-#                           IsOwnerOrReadOnly]
