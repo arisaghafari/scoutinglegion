@@ -168,3 +168,12 @@ class PassengerJoinRequestsViewSet(generics.ListAPIView, generics.CreateAPIView)
         return serializer.save(passenger=self.request.user, hichhike_id=self.request.data['id'])
 
 
+class ParticipantsViewSet(generics.ListAPIView):
+    serializer_class = ParticipantsSerializer
+
+    def get_queryset(self):
+        return Participants.objects.filter(hichhike__creator=self.request.user)
+
+
+
+
