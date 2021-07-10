@@ -20,9 +20,9 @@ class Hichhike(models.Model):
     source_state = models.CharField(max_length=200)
     destination = models.CharField(max_length=200)
     destination_state = models.CharField(max_length=200)
-    fellow_traveler_num = models.IntegerField()
+    fellow_traveler_num = models.IntegerField(blank=True, null=True)
     description = models.TextField(blank=True)
-    cities = ArrayField(models.CharField(max_length=200), blank=True)
+    cities = ArrayField(models.CharField(max_length=200), blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     trip_time = models.DateTimeField(blank=True, null=True)
 

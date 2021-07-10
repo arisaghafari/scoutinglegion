@@ -15,7 +15,7 @@ class HichhikeSerializer(serializers.ModelSerializer):
                   'creator_username', 'creator_type', 'creator_gender', 'creator_age', 'source', 'destination',
                   'fellow_traveler_num', 'description', 'cities', 'created', 'trip_time', 'source_state',
                   'destination_state']
-        optional_fields = ['cities', ]
+        optional_fields = ['cities', 'trip_time', 'cities', 'fellow_traveler_num', ]
 
 
 class JoinRequestsSerializer(serializers.ModelSerializer):
