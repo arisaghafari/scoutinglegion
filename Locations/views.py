@@ -141,6 +141,8 @@ class AllLocations(generics.ListAPIView):
         return circle_buffer.contains(point_2)
 
     def get_nearby_locations(self, center_loc, state):
+        radius = self.request.query_params['radius']
+        radius /= 100000
         locations = []
         all_loc = []
         if state is not None:
@@ -149,7 +151,7 @@ class AllLocations(generics.ListAPIView):
             all_loc = Location.objects.filter(is_private=False)
         for loc in all_loc:
             curr_loc = [loc.latitude, loc.longitude]
-            if self.is_inside(center_loc, curr_loc) is True:
+            if self.is_inside(center_loc, curr_loc, radius) is True:
                 locations.append(loc)
         return locations
 
