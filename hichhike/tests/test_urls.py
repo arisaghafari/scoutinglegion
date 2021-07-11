@@ -13,6 +13,10 @@ class TestUrls(SimpleTestCase):
         url = reverse('creator_hichhikes')
         self.assertEqual(resolve(url).func.view_class, HichhikeManageView)
 
+    def test_hichhike_detail(self):
+        url = reverse('hichhike_detail')
+        self.assertEqual(resolve(url).func.view_class, GetHichhikeDetails)
+
     def test_passenger_joinrequest(self):
         url = reverse('passenger_joinrequest')
         self.assertEqual(resolve(url).func.view_class, PassengerJoinRequestsViewSet)
