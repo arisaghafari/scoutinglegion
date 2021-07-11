@@ -123,25 +123,24 @@ class SuggestHichhike(generics.ListAPIView):
         sources = [t.source for t in trips]
         destinations = [t.destination for t in trips]
         gender = [t.creator_gender for t in trips]
-
-        return self.get_trips(sources, destinations, gender)
-        # return (query1 | query2).distinct()
+        myhichhike = Hichhike.objects.filter(Participants_hichhike__passenger=self.request.user)
+        raw = self.get_trips(sources, destinations, gender)
+        final = raw.exclude(id__in=myhichhike)
+        return final
 
     def get_trips(self, sources, destinations, gender):
         hours_added = datetime.timedelta(hours=1)
         future_date_and_time = datetime.datetime.now() + hours_added
+
         first = Hichhike.objects.filter(creator_type='d').\
             filter(source__in=sources, destination__in=destinations,
-                   trip_time__gte=future_date_and_time).order_by('-created')
-        print(first)
+                   trip_time__gte=future_date_and_time).order_by('-trip_time')
         second = Hichhike.objects.filter(creator_type='d').\
             filter(source__in=sources, cities__overlap=destinations,
-                   trip_time__gte=future_date_and_time).order_by('-created')
-        print(second)
+                   trip_time__gte=future_date_and_time).order_by('-trip_time')
         third = Hichhike.objects.filter(creator_type='d').\
             filter(cities__overlap=sources, destination__in=destinations,
-                   trip_time__gte=future_date_and_time).order_by('-created')
-        print(third)
+                   trip_time__gte=future_date_and_time).order_by('-trip_time')
         return first | second | third
 
 
