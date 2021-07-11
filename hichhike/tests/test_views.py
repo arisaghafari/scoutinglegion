@@ -13,7 +13,7 @@ class TestView(TestCase):
         self.client = APIClient()
         self.client.credentials(HTTP_AUTHORIZATION='token ' + self.token.key)
 
-    def test_creator_locations_GET(self):
+    def test_creator_hichhikes_GET(self):
         response = self.client.get(reverse('creator_hichhikes'), content_type='application/json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(self.user.creator_hichhike.count(), 0)

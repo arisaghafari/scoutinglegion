@@ -141,8 +141,8 @@ class AllLocations(generics.ListAPIView):
         return circle_buffer.contains(point_2)
 
     def get_nearby_locations(self, center_loc, state):
-        radius = self.request.query_params['radius']
-        radius /= 100000
+        radius = int(self.request.query_params['radius'])
+        radius = float(radius/100000)
         locations = []
         all_loc = []
         if state is not None:
