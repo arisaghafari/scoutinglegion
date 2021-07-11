@@ -1,7 +1,7 @@
 from django.test import SimpleTestCase
 from django.urls import resolve, reverse
 import Locations
-from hichhike.views import CreateHichhike, HichhikeManageView
+from hichhike.views import *
 
 
 class TestUrls(SimpleTestCase):
@@ -12,3 +12,19 @@ class TestUrls(SimpleTestCase):
     def test_view_hichhike(self):
         url = reverse('creator_hichhikes')
         self.assertEqual(resolve(url).func.view_class, HichhikeManageView)
+
+    def test_passenger_joinrequest(self):
+        url = reverse('passenger_joinrequest')
+        self.assertEqual(resolve(url).func.view_class, PassengerJoinRequestsViewSet)
+
+    def test_driver_joinrequest(self):
+        url = reverse('driver_joinrequest')
+        self.assertEqual(resolve(url).func.view_class, DriverJoinRequestsViewSet)
+
+    def test_my_passengers(self):
+        url = reverse('my_passengers')
+        self.assertEqual(resolve(url).func.view_class, ParticipantsDriverViewSet)
+
+    def test_my_travels(self):
+        url = reverse('my_travels')
+        self.assertEqual(resolve(url).func.view_class, ParticipantsPassengerViewSet)
