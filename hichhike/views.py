@@ -123,7 +123,9 @@ class SuggestHichhike(generics.ListAPIView):
         sources = [t.source for t in trips]
         destinations = [t.destination for t in trips]
         gender = [t.creator_gender for t in trips]
-        myhichhike = Hichhike.objects.filter(Participants_hichhike__passenger=self.request.user)
+        myhichhike = \
+            (Hichhike.objects.filter(Participants_hichhike__passenger=self.request.user))\
+            | (Hichhike.objects.filter(JoinRequest_hichhike__passenger=self.request.user))
         raw = self.get_trips(sources, destinations, gender)
         final = raw.exclude(id__in=myhichhike)
         return final
